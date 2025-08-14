@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Analysis - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/market-analysis.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Market Analysis Dashboard</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="deal-finder.html">Deal Finder</a>
+                <a href="market-analysis.html" class="active">Market Analysis</a>
+                <a href="investment-criteria.html">Investment Criteria</a>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Market Stats Section -->
+            <section class="market-stats">
+                <h2>Market Statistics</h2>
+                <div class="stats-form">
+                    <input type="text" id="city" placeholder="City" required>
+                    <input type="text" id="state" placeholder="State" required>
+                    <button onclick="getMarketStats()">Get Market Stats</button>
+                </div>
+                <div id="market-stats-results" class="results-container"></div>
+            </section>
+
+            <!-- Property Valuation Section -->
+            <section class="property-valuation">
+                <h2>Property Valuation</h2>
+                <div class="valuation-form">
+                    <div class="form-row">
+                        <input type="text" id="val-city" placeholder="City" required>
+                        <input type="text" id="val-state" placeholder="State" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="bedrooms" placeholder="Bedrooms" min="0">
+                        <input type="number" id="bathrooms" placeholder="Bathrooms" min="0" step="0.5">
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="house-size" placeholder="House Size (sq ft)" min="0">
+                        <input type="number" id="asking-price" placeholder="Asking Price" min="0">
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="estimated-rent" placeholder="Estimated Monthly Rent" min="0">
+                        <input type="number" id="acre-lot" placeholder="Lot Size (acres)" min="0" step="0.01">
+                    </div>
+                    <button onclick="analyzeInvestment()">Analyze Investment</button>
+                    <button onclick="getComparables()">Find Comparables</button>
+                </div>
+                <div id="valuation-results" class="results-container"></div>
+            </section>
+
+            <!-- Top Markets Section -->
+            <section class="top-markets">
+                <h2>Top Markets</h2>
+                <button onclick="getTopMarkets()">Load Top Markets</button>
+                <div id="top-markets-results" class="results-container"></div>
+            </section>
+
+            <!-- Model Training Section -->
+            <section class="model-training">
+                <h2>ML Model Management</h2>
+                <div class="model-controls">
+                    <button onclick="trainModel()">Train Valuation Model</button>
+                    <button onclick="getModelInfo()">Model Info</button>
+                </div>
+                <div id="model-results" class="results-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/market-analysis.js"></script>
+</body>
+</html>

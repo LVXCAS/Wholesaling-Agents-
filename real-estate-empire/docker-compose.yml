@@ -1,0 +1,190 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+    networks:
+      - real-estate-network
+
+  # Authentication Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/auth_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # Property Analysis Service
+  property-service:
+    build:
+      context: ./services/property-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/property_db
+      - MONGODB_URL=mongodb://mongodb:27017/property_data
+    depends_on:
+      - postgres
+      - mongodb
+    networks:
+      - real-estate-network
+
+  # Lead Generation Service
+  lead-service:
+    build:
+      context: ./services/lead-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/lead_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # Outreach Service
+  outreach-service:
+    build:
+      context: ./services/outreach-service
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/outreach_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # Transaction Service
+  transaction-service:
+    build:
+      context: ./services/transaction-service
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/transaction_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # Portfolio Service
+  portfolio-service:
+    build:
+      context: ./services/portfolio-service
+      dockerfile: Dockerfile
+    ports:
+      - "8006:8006"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/portfolio_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # Reporting Service
+  reporting-service:
+    build:
+      context: ./services/reporting-service
+      dockerfile: Dockerfile
+    ports:
+      - "8007:8007"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/reporting_db
+    depends_on:
+      - postgres
+    networks:
+      - real-estate-network
+
+  # AI/ML Service
+  ml-service:
+    build:
+      context: ./services/ml-service
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8008"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/ml_data
+    depends_on:
+      - mongodb
+    networks:
+      - real-estate-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=real_estate_empire
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - real-estate-network
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - real-estate-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - real-estate-network
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://api-gateway:8000
+    depends_on:
+      - api-gateway
+    networks:
+      - real-estate-network
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data:
+
+networks:
+  real-estate-network:
+    driver: bridge

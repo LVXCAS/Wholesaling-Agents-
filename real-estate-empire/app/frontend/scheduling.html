@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduling - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/scheduling.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FullCalendar for calendar view -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="communication-center">
+                    <i class="fas fa-comments"></i>
+                    Communication
+                </button>
+                <button class="nav-item" data-tab="campaign-management">
+                    <i class="fas fa-bullhorn"></i>
+                    Campaigns
+                </button>
+                <button class="nav-item active" data-tab="scheduling">
+                    <i class="fas fa-calendar"></i>
+                    Scheduling
+                </button>
+                <button class="nav-item" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="scheduling-interface">
+                <!-- Header -->
+                <div class="page-header">
+                    <div class="header-content">
+                        <h1><i class="fas fa-calendar"></i> Scheduling & Appointments</h1>
+                        <p>Manage appointments, follow-ups, and reminders</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="sync-calendar">
+                            <i class="fas fa-sync-alt"></i> Sync Calendar
+                        </button>
+                        <button class="btn btn-primary" id="schedule-appointment">
+                            <i class="fas fa-plus"></i> New Appointment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scheduling Tabs -->
+                <div class="scheduling-tabs">
+                    <button class="tab-btn active" data-tab="calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                        Calendar View
+                    </button>
+                    <button class="tab-btn" data-tab="appointments">
+                        <i class="fas fa-handshake"></i>
+                        Appointments
+                    </button>
+                    <button class="tab-btn" data-tab="follow-ups">
+                        <i class="fas fa-tasks"></i>
+                        Follow-ups
+                    </button>
+                    <button class="tab-btn" data-tab="reminders">
+                        <i class="fas fa-bell"></i>
+                        Reminders
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content-container">
+                    <!-- Calendar View Tab -->
+                    <div id="calendar-tab" class="tab-content active">
+                        <div class="calendar-container">
+                            <div class="calendar-sidebar">
+                                <div class="calendar-controls">
+                                    <div class="view-controls">
+                                        <button class="view-btn active" data-view="dayGridMonth">Month</button>
+                                        <button class="view-btn" data-view="timeGridWeek">Week</button>
+                                        <button class="view-btn" data-view="timeGridDay">Day</button>
+                                        <button class="view-btn" data-view="listWeek">Agenda</button>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" id="today-btn">Today</button>
+                                </div>
+
+                                <div class="calendar-filters">
+                                    <h3>Event Types</h3>
+                                    <div class="filter-list">
+                                        <label class="filter-item">
+                                            <input type="checkbox" checked data-filter="appointments">
+                                            <span class="filter-color appointments"></span>
+                                            Appointments
+                                        </label>
+                                        <label class="filter-item">
+                                            <input type="checkbox" checked data-filter="follow-ups">
+                                            <span class="filter-color follow-ups"></span>
+                                            Follow-ups
+                                        </label>
+                                        <label class="filter-item">
+                                            <input type="checkbox" checked data-filter="reminders">
+                                            <span class="filter-color reminders"></span>
+                                            Reminders
+                                        </label>
+                                        <label class="filter-item">
+                                            <input type="checkbox" checked data-filter="campaigns">
+                                            <span class="filter-color campaigns"></span>
+                                            Campaign Events
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="upcoming-events">
+                                    <h3>Upcoming Events</h3>
+                                    <div class="event-list" id="upcoming-events-list">
+                                        <!-- Upcoming events will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="calendar-main">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointments Tab -->
+                    <div id="appointments-tab" class="tab-content">
+                        <div class="appointments-container">
+                            <div class="appointments-header">
+                                <div class="appointments-filters">
+                                    <div class="filter-group">
+                                        <label>Status:</label>
+                                        <select id="appointment-status-filter">
+                                            <option value="all">All Appointments</option>
+                                            <option value="scheduled">Scheduled</option>
+                                            <option value="confirmed">Confirmed</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="cancelled">Cancelled</option>
+                                            <option value="no-show">No Show</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-group">
+                                        <label>Type:</label>
+                                        <select id="appointment-type-filter">
+                                            <option value="all">All Types</option>
+                                            <option value="property-viewing">Property Viewing</option>
+                                            <option value="consultation">Consultation</option>
+                                            <option value="negotiation">Negotiation</option>
+                                            <option value="closing">Closing</option>
+                                            <option value="follow-up">Follow-up</option>
+                                        </select>
+                                    </div>
+                                    <div class="search-group">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="appointment-search" placeholder="Search appointments...">
+                                    </div>
+                                </div>
+                                <div class="appointments-actions">
+                                    <button class="btn btn-secondary" id="export-appointments">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="appointments-list" id="appointments-list">
+                                <!-- Appointments will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Follow-ups Tab -->
+                    <div id="follow-ups-tab" class="tab-content">
+                        <div class="follow-ups-container">
+                            <div class="follow-ups-header">
+                                <div class="follow-ups-stats">
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="overdue-count">0</div>
+                                        <div class="stat-label">Overdue</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="today-count">0</div>
+                                        <div class="stat-label">Due Today</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="week-count">0</div>
+                                        <div class="stat-label">This Week</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="completed-count">0</div>
+                                        <div class="stat-label">Completed</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="create-follow-up">
+                                    <i class="fas fa-plus"></i> New Follow-up
+                                </button>
+                            </div>
+
+                            <div class="follow-ups-filters">
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active" data-filter="all">All</button>
+                                    <button class="filter-tab" data-filter="overdue">Overdue</button>
+                                    <button class="filter-tab" data-filter="today">Today</button>
+                                    <button class="filter-tab" data-filter="week">This Week</button>
+                                    <button class="filter-tab" data-filter="completed">Completed</button>
+                                </div>
+                                <div class="sort-controls">
+                                    <select id="follow-up-sort">
+                                        <option value="due_date">Due Date</option>
+                                        <option value="priority">Priority</option>
+                                        <option value="created_date">Created Date</option>
+                                        <option value="contact_name">Contact Name</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="follow-ups-list" id="follow-ups-list">
+                                <!-- Follow-ups will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminders Tab -->
+                    <div id="reminders-tab" class="tab-content">
+                        <div class="reminders-container">
+                            <div class="reminders-header">
+                                <h2>Reminder Configuration</h2>
+                                <p>Set up automated reminders for appointments and follow-ups</p>
+                                <button class="btn btn-primary" id="create-reminder-rule">
+                                    <i class="fas fa-plus"></i> New Reminder Rule
+                                </button>
+                            </div>
+
+                            <div class="reminder-rules">
+                                <div class="rules-section">
+                                    <h3>Appointment Reminders</h3>
+                                    <div class="rules-list" id="appointment-reminder-rules">
+                                        <!-- Appointment reminder rules will be loaded here -->
+                                    </div>
+                                </div>
+
+                                <div class="rules-section">
+                                    <h3>Follow-up Reminders</h3>
+                                    <div class="rules-list" id="follow-up-reminder-rules">
+                                        <!-- Follow-up reminder rules will be loaded here -->
+                                    </div>
+                                </div>
+
+                                <div class="rules-section">
+                                    <h3>Campaign Reminders</h3>
+                                    <div class="rules-list" id="campaign-reminder-rules">
+                                        <!-- Campaign reminder rules will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="reminder-history">
+                                <h3>Recent Reminders</h3>
+                                <div class="history-list" id="reminder-history-list">
+                                    <!-- Reminder history will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div class="modal-overlay" id="appointment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="appointment-modal-title">Schedule Appointment</h2>
+                <button class="modal-close" id="close-appointment-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="appointment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment-title">Title *</label>
+                            <input type="text" id="appointment-title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-type">Type *</label>
+                            <select id="appointment-type" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="property-viewing">Property Viewing</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="negotiation">Negotiation</option>
+                                <option value="closing">Closing</option>
+                                <option value="follow-up">Follow-up</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment-contact">Contact</label>
+                            <select id="appointment-contact" class="form-control">
+                                <option value="">Select Contact</option>
+                                <!-- Contacts will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-property">Property</label>
+                            <select id="appointment-property" class="form-control">
+                                <option value="">Select Property</option>
+                                <!-- Properties will be loaded here -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment-date">Date *</label>
+                            <input type="date" id="appointment-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-time">Time *</label>
+                            <input type="time" id="appointment-time" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-duration">Duration (minutes)</label>
+                            <select id="appointment-duration" class="form-control">
+                                <option value="30">30 minutes</option>
+                                <option value="60" selected>1 hour</option>
+                                <option value="90">1.5 hours</option>
+                                <option value="120">2 hours</option>
+                                <option value="180">3 hours</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment-location">Location</label>
+                        <input type="text" id="appointment-location" class="form-control" placeholder="Meeting location or address">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment-description">Description</label>
+                        <textarea id="appointment-description" class="form-control" rows="3" placeholder="Additional notes or agenda items"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reminders</label>
+                        <div class="reminder-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="reminder-24h" value="24h">
+                                24 hours before
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="reminder-2h" value="2h" checked>
+                                2 hours before
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="reminder-30m" value="30m">
+                                30 minutes before
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment-priority">Priority</label>
+                        <select id="appointment-priority" class="form-control">
+                            <option value="low">Low</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-appointment">Cancel</button>
+                <button class="btn btn-primary" id="save-appointment">Save Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow-up Modal -->
+    <div class="modal-overlay" id="follow-up-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="follow-up-modal-title">Create Follow-up</h2>
+                <button class="modal-close" id="close-follow-up-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="follow-up-form">
+                    <div class="form-group">
+                        <label for="follow-up-title">Title *</label>
+                        <input type="text" id="follow-up-title" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="follow-up-contact">Contact *</label>
+                            <select id="follow-up-contact" class="form-control" required>
+                                <option value="">Select Contact</option>
+                                <!-- Contacts will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="follow-up-type">Type</label>
+                            <select id="follow-up-type" class="form-control">
+                                <option value="call">Phone Call</option>
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                                <option value="meeting">In-Person Meeting</option>
+                                <option value="task">General Task</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="follow-up-due-date">Due Date *</label>
+                            <input type="date" id="follow-up-due-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="follow-up-due-time">Due Time</label>
+                            <input type="time" id="follow-up-due-time" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="follow-up-priority">Priority</label>
+                            <select id="follow-up-priority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="normal" selected>Normal</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="follow-up-description">Description</label>
+                        <textarea id="follow-up-description" class="form-control" rows="3" placeholder="What needs to be done?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Auto-create next follow-up</label>
+                        <div class="auto-follow-up">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="auto-follow-up-enabled">
+                                Create follow-up if no response
+                            </label>
+                            <div class="auto-follow-up-details" id="auto-follow-up-details" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="auto-follow-up-days">Days after due date</label>
+                                        <select id="auto-follow-up-days" class="form-control">
+                                            <option value="1">1 day</option>
+                                            <option value="3" selected>3 days</option>
+                                            <option value="7">1 week</option>
+                                            <option value="14">2 weeks</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="auto-follow-up-type">Follow-up type</label>
+                                        <select id="auto-follow-up-type" class="form-control">
+                                            <option value="call">Phone Call</option>
+                                            <option value="email">Email</option>
+                                            <option value="sms">SMS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-follow-up">Cancel</button>
+                <button class="btn btn-primary" id="save-follow-up">Save Follow-up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Rule Modal -->
+    <div class="modal-overlay" id="reminder-rule-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Reminder Rule</h2>
+                <button class="modal-close" id="close-reminder-rule-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="reminder-rule-form">
+                    <div class="form-group">
+                        <label for="rule-name">Rule Name *</label>
+                        <input type="text" id="rule-name" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rule-trigger">Trigger Event *</label>
+                            <select id="rule-trigger" class="form-control" required>
+                                <option value="">Select Trigger</option>
+                                <option value="appointment-scheduled">Appointment Scheduled</option>
+                                <option value="follow-up-created">Follow-up Created</option>
+                                <option value="campaign-launched">Campaign Launched</option>
+                                <option value="lead-added">New Lead Added</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-timing">Send Reminder</label>
+                            <select id="rule-timing" class="form-control">
+                                <option value="immediately">Immediately</option>
+                                <option value="15m">15 minutes before</option>
+                                <option value="30m">30 minutes before</option>
+                                <option value="1h">1 hour before</option>
+                                <option value="2h">2 hours before</option>
+                                <option value="24h">24 hours before</option>
+                                <option value="1d">1 day after</option>
+                                <option value="3d">3 days after</option>
+                                <option value="1w">1 week after</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-channels">Reminder Channels</label>
+                        <div class="channel-selection">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rule-email" value="email" checked>
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rule-sms" value="sms">
+                                <i class="fas fa-sms"></i>
+                                SMS
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rule-push" value="push">
+                                <i class="fas fa-bell"></i>
+                                Push Notification
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-message">Message Template</label>
+                        <textarea id="rule-message" class="form-control" rows="3" placeholder="Reminder message template with variables like {{contact_name}}, {{appointment_time}}, etc."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="rule-active" checked>
+                            Active (rule will be applied to new events)
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-reminder-rule">Cancel</button>
+                <button class="btn btn-primary" id="save-reminder-rule">Save Rule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/scheduling.js"></script>
+</body>
+</html>

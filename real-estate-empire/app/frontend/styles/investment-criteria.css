@@ -1,0 +1,498 @@
+/* Investment Criteria Editor Styles */
+
+.criteria-editor-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Toolbar */
+.criteria-toolbar {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toolbar-left,
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.template-selector {
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--surface-color);
+    font-size: 0.95rem;
+}
+
+/* Main Content Layout */
+.criteria-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+}
+
+/* Criteria Form */
+.criteria-form-container {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.criteria-form {
+    padding: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.form-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form-section h2 i {
+    color: var(--primary-color);
+}
+
+/* Checkbox Groups */
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.checkbox-group label:hover {
+    background: var(--background-color);
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin: 0;
+}
+
+/* Range Sliders */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+}
+
+.range-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.range-display span:nth-child(2) {
+    font-weight: 600;
+    color: var(--primary-color);
+    background: var(--background-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+}
+
+/* Impact Panel */
+.impact-panel {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.impact-visualization {
+    /* Styles will be applied by JavaScript */
+}
+
+.impact-summary h4 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.impact-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.impact-metric {
+    text-align: center;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.metric-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.impact-factors {
+    margin-bottom: 1.5rem;
+}
+
+.impact-factors h5 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.factors-grid {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.factor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
+}
+
+.factor-name {
+    color: var(--text-primary);
+}
+
+.factor-level {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.factor-level.low {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.factor-level.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.factor-level.high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.restrictiveness-bar {
+    margin-top: 1rem;
+}
+
+.bar-background {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.bar-fill {
+    height: 100%;
+    transition: var(--transition);
+    border-radius: 4px;
+}
+
+.bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Test Results Styles */
+.test-results {
+    /* Styles for test results modal content */
+}
+
+.results-summary {
+    margin-bottom: 2rem;
+}
+
+.results-summary h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.summary-stats .stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+}
+
+.summary-stats .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.summary-stats .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.rejection-reasons,
+.matching-properties {
+    margin-bottom: 2rem;
+}
+
+.rejection-reasons h4,
+.matching-properties h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.reasons-list,
+.matches-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.reason-item,
+.match-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
+}
+
+.reason-text,
+.match-property {
+    flex: 1;
+}
+
+.reason-count,
+.match-score {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.match-property strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.match-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Template Grid */
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.template-card {
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.template-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.template-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.template-card p {
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.template-strategy {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Hidden Elements */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .criteria-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .criteria-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .toolbar-left,
+    .toolbar-right {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .template-selector {
+        min-width: auto;
+    }
+    
+    .criteria-form {
+        padding: 1.5rem;
+    }
+    
+    .form-section h2 {
+        font-size: 1.1rem;
+    }
+    
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .template-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .criteria-form {
+        padding: 1rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .impact-panel {
+        padding: 1rem;
+    }
+    
+    .toolbar-left,
+    .toolbar-right {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,421 @@
+{
+  "overall_readiness": true,
+  "agent_results": {
+    "deal_analyzer_20250809_204435": {
+      "agent_id": "deal_analyzer_20250809_204435",
+      "specialization": "deal_analyzer",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 89.33333333333333,
+          "accuracy_std": 20.797969986408663,
+          "sample_size": 30,
+          "min_accuracy": 13.0,
+          "max_accuracy": 97.0
+        },
+        "consistency": {
+          "consistency_score": 97.49999999999999,
+          "action_consistency": 0.95,
+          "confidence_std": 1.1102230246251565e-16,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.015000000000000013,
+          "correlation_std": 0.02291287847477922,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 68.16666666666667,
+          "bull_market_score": 50.0,
+          "bear_market_score": 84.5,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 85.85590032714859
+        },
+        "stress_test": {
+          "stress_test_score": 79.13,
+          "success_rate": 1.0,
+          "average_processing_time": 0.3298745700000001,
+          "max_processing_time": 0.384332,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.49999999999999,
+        "improvement": 0,
+        "specialization": 100,
+        "expert_correlation": 2.500000000000002,
+        "edge_case_handling": 100.0,
+        "stress_test": 79.13
+      },
+      "production_readiness_score": 77.788,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    },
+    "negotiation_expert_20250809_204531": {
+      "agent_id": "negotiation_expert_20250809_204531",
+      "specialization": "negotiation_expert",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 89.66666666666667,
+          "accuracy_std": 13.39983416149452,
+          "sample_size": 30,
+          "min_accuracy": 63.0,
+          "max_accuracy": 97.0
+        },
+        "consistency": {
+          "consistency_score": 97.49999999999999,
+          "action_consistency": 0.95,
+          "confidence_std": 1.1102230246251565e-16,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.10750000000000001,
+          "correlation_std": 0.2980247472945829,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 66.83333333333333,
+          "bull_market_score": 54.0,
+          "bear_market_score": 76.5,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 90.54543026421145
+        },
+        "stress_test": {
+          "stress_test_score": 78.6,
+          "success_rate": 1.0,
+          "average_processing_time": 0.31285504,
+          "max_processing_time": 0.415058,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.49999999999999,
+        "improvement": 100,
+        "specialization": 100,
+        "expert_correlation": 17.91666666666667,
+        "edge_case_handling": 100.0,
+        "stress_test": 78.6
+      },
+      "production_readiness_score": 85.0475,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    },
+    "portfolio_manager_20250809_204615": {
+      "agent_id": "portfolio_manager_20250809_204615",
+      "specialization": "portfolio_manager",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 87.86666666666666,
+          "accuracy_std": 18.631037425638855,
+          "sample_size": 30,
+          "min_accuracy": 13.0,
+          "max_accuracy": 97.0
+        },
+        "consistency": {
+          "consistency_score": 97.49999999999999,
+          "action_consistency": 0.95,
+          "confidence_std": 1.1102230246251565e-16,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.022500000000000013,
+          "correlation_std": 0.029474565306379,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 68.16666666666667,
+          "bull_market_score": 50.0,
+          "bear_market_score": 84.5,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 85.85590032714859
+        },
+        "stress_test": {
+          "stress_test_score": 76.43,
+          "success_rate": 1.0,
+          "average_processing_time": 0.32822404000000005,
+          "max_processing_time": 0.456639,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.49999999999999,
+        "improvement": 0,
+        "specialization": 100,
+        "expert_correlation": 3.7500000000000027,
+        "edge_case_handling": 100.0,
+        "stress_test": 76.43
+      },
+      "production_readiness_score": 77.7055,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    },
+    "market_analyst_20250809_204630": {
+      "agent_id": "market_analyst_20250809_204630",
+      "specialization": "market_analyst",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 87.33333333333333,
+          "accuracy_std": 22.25358897396603,
+          "sample_size": 30,
+          "min_accuracy": 13.0,
+          "max_accuracy": 97.0
+        },
+        "consistency": {
+          "consistency_score": 97.49999999999999,
+          "action_consistency": 0.95,
+          "confidence_std": 1.1102230246251565e-16,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.015000000000000013,
+          "correlation_std": 0.02291287847477922,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 68.16666666666667,
+          "bull_market_score": 50.0,
+          "bear_market_score": 84.5,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 85.85590032714859
+        },
+        "stress_test": {
+          "stress_test_score": 77.78,
+          "success_rate": 1.0,
+          "average_processing_time": 0.29606292,
+          "max_processing_time": 0.303162,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.49999999999999,
+        "improvement": 0,
+        "specialization": 100,
+        "expert_correlation": 2.500000000000002,
+        "edge_case_handling": 100.0,
+        "stress_test": 77.78
+      },
+      "production_readiness_score": 77.653,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    },
+    "lead_specialist_20250809_204645": {
+      "agent_id": "lead_specialist_20250809_204645",
+      "specialization": "lead_specialist",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 76.33333333333333,
+          "accuracy_std": 33.0047807984776,
+          "sample_size": 30,
+          "min_accuracy": 14.2,
+          "max_accuracy": 98.2
+        },
+        "consistency": {
+          "consistency_score": 97.5,
+          "action_consistency": 0.95,
+          "confidence_std": 0.0,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.012500000000000011,
+          "correlation_std": 0.021650635094610987,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 68.36666666666666,
+          "bull_market_score": 50.0,
+          "bear_market_score": 85.1,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 85.6240169418266
+        },
+        "stress_test": {
+          "stress_test_score": 78.95100000000001,
+          "success_rate": 1.0,
+          "average_processing_time": 0.29759056999999994,
+          "max_processing_time": 0.313392,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.5,
+        "improvement": 100,
+        "specialization": 100,
+        "expert_correlation": 2.0833333333333353,
+        "edge_case_handling": 100.0,
+        "stress_test": 78.95100000000001
+      },
+      "production_readiness_score": 82.7076,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    },
+    "communication_agent_20250809_204652": {
+      "agent_id": "communication_agent_20250809_204652",
+      "specialization": "communication_agent",
+      "tests_performed": {
+        "real_data_accuracy": {
+          "average_accuracy": 83.3333333333333,
+          "accuracy_std": 26.08541525237597,
+          "sample_size": 30,
+          "min_accuracy": 14.2,
+          "max_accuracy": 98.2
+        },
+        "consistency": {
+          "consistency_score": 97.5,
+          "action_consistency": 0.95,
+          "confidence_std": 0.0,
+          "sample_size": 20
+        },
+        "edge_case_handling": {
+          "edge_case_score": 100.0,
+          "correct_decisions": 3,
+          "total_cases": 3,
+          "success_rate": 1.0
+        },
+        "expert_correlation": {
+          "correlation": 0.0050000000000000044,
+          "correlation_std": 0.015000000000000012,
+          "sample_size": 20
+        },
+        "market_adaptation": {
+          "adaptation_score": 68.36666666666666,
+          "bull_market_score": 50.0,
+          "bear_market_score": 85.1,
+          "stable_market_score": 70.0,
+          "adaptation_consistency": 85.6240169418266
+        },
+        "stress_test": {
+          "stress_test_score": 75.77199999999999,
+          "success_rate": 1.0,
+          "average_processing_time": 0.29607318000000005,
+          "max_processing_time": 0.305265,
+          "scenarios_processed": 100
+        }
+      },
+      "benchmark_scores": {
+        "accuracy": 100,
+        "consistency": 97.5,
+        "improvement": 9.460712022246582,
+        "specialization": 100,
+        "expert_correlation": 0.8333333333333341,
+        "edge_case_handling": 100.0,
+        "stress_test": 75.77199999999999
+      },
+      "production_readiness_score": 77.67523560111233,
+      "readiness_factors": {},
+      "recommendations": [
+        "Low correlation with expert analysis - review decision logic"
+      ]
+    }
+  },
+  "benchmark_analysis": {
+    "accuracy": {
+      "average": 100.0,
+      "min": 100,
+      "max": 100,
+      "std": 0.0,
+      "passing_agents": 6
+    },
+    "consistency": {
+      "average": 97.5,
+      "min": 97.49999999999999,
+      "max": 97.5,
+      "std": 1.160311428702309e-14,
+      "passing_agents": 6
+    },
+    "improvement": {
+      "average": 34.91011867037443,
+      "min": 0,
+      "max": 100,
+      "std": 46.14687919836351,
+      "passing_agents": 2
+    },
+    "specialization": {
+      "average": 100.0,
+      "min": 100,
+      "max": 100,
+      "std": 0.0,
+      "passing_agents": 6
+    },
+    "expert_correlation": {
+      "average": 4.930555555555559,
+      "min": 0.8333333333333341,
+      "max": 17.91666666666667,
+      "std": 5.870007071945601,
+      "passing_agents": 0
+    },
+    "edge_case_handling": {
+      "average": 100.0,
+      "min": 100.0,
+      "max": 100.0,
+      "std": 0.0,
+      "passing_agents": 6
+    },
+    "stress_test": {
+      "average": 77.77716666666667,
+      "min": 75.77199999999999,
+      "max": 79.13,
+      "std": 1.2728352101596752,
+      "passing_agents": 6
+    }
+  },
+  "production_recommendations": [
+    "\u2705 All agents ready for production deployment",
+    "Workforce weakness in improvement - average 34.9/100",
+    "Workforce weakness in expert_correlation - average 4.9/100"
+  ],
+  "risk_assessment": {
+    "high_risk_factors": [
+      "Poor improvement performance (34.9/100)",
+      "Poor expert_correlation performance (4.9/100)"
+    ],
+    "medium_risk_factors": [
+      "High improvement variability (46.1 std)"
+    ],
+    "low_risk_factors": [],
+    "overall_risk_level": "HIGH"
+  },
+  "validation_timestamp": "2025-08-09T20:47:01.676435"
+}

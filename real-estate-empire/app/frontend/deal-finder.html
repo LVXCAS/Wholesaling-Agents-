@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Finder - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/deal-finder.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-tab="deal-finder">
+                    <i class="fas fa-search"></i>
+                    Deal Finder
+                </button>
+                <button class="nav-item" data-tab="property-input">
+                    <i class="fas fa-plus"></i>
+                    Add Property
+                </button>
+                <button class="nav-item" data-tab="financial-dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    Financial Analysis
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="deal-finder-container" class="deal-finder-container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1><i class="fas fa-search"></i> Deal Finder</h1>
+                    <p>Discover and analyze investment opportunities</p>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="deal-finder-controls">
+                    <!-- Search and View Toggle -->
+                    <div class="controls-row">
+                        <div class="search-container">
+                            <div class="search-input-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="property-search" placeholder="Search properties, addresses, owners..." autocomplete="off">
+                            </div>
+                        </div>
+                        
+                        <div class="view-toggle">
+                            <button id="list-view-btn" class="btn btn-secondary active">
+                                <i class="fas fa-list"></i> List
+                            </button>
+                            <button id="map-view-btn" class="btn btn-secondary">
+                                <i class="fas fa-map"></i> Map
+                            </button>
+                        </div>
+                        
+                        <button id="refresh-properties-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <!-- Filters and Sort -->
+                    <div class="controls-row">
+                        <div class="filters-container">
+                            <button class="btn btn-secondary" onclick="toggleFilters()">
+                                <i class="fas fa-filter"></i> Filters
+                            </button>
+                            
+                            <div class="sort-controls">
+                                <select id="sort-by">
+                                    <option value="created_at">Date Added</option>
+                                    <option value="lead_score">Lead Score</option>
+                                    <option value="listing_price">Price</option>
+                                    <option value="estimated_value">Estimated Value</option>
+                                    <option value="last_contact_date">Last Contact</option>
+                                </select>
+                                
+                                <select id="sort-order">
+                                    <option value="desc">Descending</option>
+                                    <option value="asc">Ascending</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="properties-stats" class="properties-stats">
+                            <!-- Stats will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Panel -->
+                <div id="filter-panel" class="filter-panel hidden">
+                    <div class="filter-panel-header">
+                        <h3><i class="fas fa-filter"></i> Filter Properties</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="toggleFilters()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form class="filter-form">
+                        <div class="filter-section">
+                            <h4>Price Range</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="min-price">Min Price</label>
+                                    <input type="number" id="min-price" placeholder="$0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-price">Max Price</label>
+                                    <input type="number" id="max-price" placeholder="No limit">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <h4>Property Details</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="property-type">Property Type</label>
+                                    <select id="property-type">
+                                        <option value="">All Types</option>
+                                        <option value="single_family">Single Family</option>
+                                        <option value="multi_family">Multi Family</option>
+                                        <option value="condo">Condo</option>
+                                        <option value="townhouse">Townhouse</option>
+                                        <option value="commercial">Commercial</option>
+                                        <option value="land">Land</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="location-filter">Location</label>
+                                    <input type="text" id="location-filter" placeholder="City, State, ZIP">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="min-bedrooms">Min Bedrooms</label>
+                                    <input type="number" id="min-bedrooms" min="0" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-bedrooms">Max Bedrooms</label>
+                                    <input type="number" id="max-bedrooms" min="0" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label for="min-bathrooms">Min Bathrooms</label>
+                                    <input type="number" id="min-bathrooms" min="0" max="10" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-bathrooms">Max Bathrooms</label>
+                                    <input type="number" id="max-bathrooms" min="0" max="10" step="0.5">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="min-square-feet">Min Sq Ft</label>
+                                    <input type="number" id="min-square-feet" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-square-feet">Max Sq Ft</label>
+                                    <input type="number" id="max-square-feet" placeholder="No limit">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <h4>Lead Information</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="status-filter">Status</label>
+                                    <select id="status-filter">
+                                        <option value="">All Statuses</option>
+                                        <option value="new">New</option>
+                                        <option value="contacted">Contacted</option>
+                                        <option value="interested">Interested</option>
+                                        <option value="qualified">Qualified</option>
+                                        <option value="under_contract">Under Contract</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="not_interested">Not Interested</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="source-filter">Source</label>
+                                    <select id="source-filter">
+                                        <option value="">All Sources</option>
+                                        <option value="mls">MLS</option>
+                                        <option value="foreclosure">Foreclosure</option>
+                                        <option value="public_records">Public Records</option>
+                                        <option value="off_market">Off Market</option>
+                                        <option value="referral">Referral</option>
+                                        <option value="direct_mail">Direct Mail</option>
+                                        <option value="online">Online</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="min-lead-score">Min Lead Score</label>
+                                    <input type="number" id="min-lead-score" min="0" max="100" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-lead-score">Max Lead Score</label>
+                                    <input type="number" id="max-lead-score" min="0" max="100" placeholder="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="button" id="clear-filters-btn" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </button>
+                            <button type="button" id="apply-filters-btn" class="btn btn-primary">
+                                <i class="fas fa-check"></i> Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Content Area -->
+                <div class="deal-finder-content">
+                    <!-- List View -->
+                    <div id="properties-list-container" class="properties-container">
+                        <div id="properties-list" class="properties-list">
+                            <!-- Property cards will be populated by JavaScript -->
+                        </div>
+                        
+                        <div id="properties-pagination" class="properties-pagination">
+                            <!-- Pagination will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Map View -->
+                    <div id="properties-map-container" class="properties-container hidden">
+                        <div class="map-controls">
+                            <div id="visible-properties-count" class="visible-count">
+                                Loading properties...
+                            </div>
+                        </div>
+                        
+                        <div id="properties-map" class="properties-map">
+                            <!-- Map will be initialized by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Property Details Modal -->
+    <div id="property-details-modal" class="modal-overlay">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-home"></i> Property Details</h2>
+                <button class="modal-close" onclick="hideModal('property-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="property-details-content">
+                <!-- Property details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Analysis Modal -->
+    <div id="quick-analysis-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-calculator"></i> Quick Analysis</h2>
+                <button class="modal-close" onclick="hideModal('quick-analysis-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="quick-analysis-content">
+                <!-- Analysis results will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Owner Modal -->
+    <div id="contact-owner-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-phone"></i> Contact Owner</h2>
+                <button class="modal-close" onclick="hideModal('contact-owner-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="contact-owner-content">
+                <!-- Contact form will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/deal-finder.js"></script>
+    
+    <script>
+        // Global functions for modal and filter management
+        function toggleFilters() {
+            const panel = document.getElementById('filter-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

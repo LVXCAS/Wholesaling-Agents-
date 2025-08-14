@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment of Real Estate Contract</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin-bottom: 20px; }
+        .signature-section { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px; }
+        .signature-line { border-bottom: 1px solid #000; width: 300px; display: inline-block; margin: 10px; }
+        .terms { margin: 10px 0; }
+        .bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ASSIGNMENT OF REAL ESTATE CONTRACT</h1>
+        <p>Contract ID: {{ contract_id }}</p>
+        <p>Date: {{ generated_date }}</p>
+    </div>
+
+    <div class="section">
+        <h2>PROPERTY INFORMATION</h2>
+        <p><span class="bold">Property Address:</span> {{ deal.property.address }}, {{ deal.property.city }}, {{ deal.property.state }} {{ deal.property.zip_code }}</p>
+        <p><span class="bold">Original Contract Date:</span> {{ terms.original_contract_date }}</p>
+        <p><span class="bold">Original Purchase Price:</span> ${{ (terms.original_purchase_price or 0) | round(2) | string | replace('.0', '') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>ASSIGNMENT PARTIES</h2>
+        {% for party in parties %}
+        <div class="terms">
+            <p><span class="bold">{{ party.role }}:</span></p>
+            <p>Name: {{ party.name }}</p>
+            <p>Address: {{ party.address }}</p>
+            {% if party.phone %}
+            <p>Phone: {{ party.phone }}</p>
+            {% endif %}
+            {% if party.email %}
+            <p>Email: {{ party.email }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>ASSIGNMENT TERMS</h2>
+        <p><span class="bold">Assignment Fee:</span> ${{ (terms.assignment_fee or 0) | round(2) | string | replace('.0', '') }}</p>
+        <p><span class="bold">Assignment Date:</span> {{ terms.assignment_date }}</p>
+        <p><span class="bold">Closing Date:</span> {{ terms.closing_date }}</p>
+    </div>
+
+    <div class="section">
+        <h2>ASSIGNMENT AGREEMENT</h2>
+        <p>The Assignor hereby assigns, transfers, and conveys to the Assignee all of Assignor's right, title, and interest in and to the above-described real estate purchase contract, subject to the following terms and conditions:</p>
+        
+        <ol>
+            <li>Assignee agrees to assume all obligations and responsibilities of the Assignor under the original contract.</li>
+            <li>Assignee agrees to pay the assignment fee of ${{ (terms.assignment_fee or 0) | round(2) | string | replace('.0', '') }} to Assignor upon execution of this agreement.</li>
+            <li>Assignor warrants that the original contract is in full force and effect and that no defaults exist.</li>
+            <li>This assignment is binding upon the heirs, successors, and assigns of both parties.</li>
+            {% if terms.additional_terms %}
+            {% for term in terms.additional_terms %}
+            <li>{{ term }}</li>
+            {% endfor %}
+            {% endif %}
+        </ol>
+    </div>
+
+    <div class="signature-section">
+        <h2>SIGNATURES</h2>
+        
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">ASSIGNOR:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">ASSIGNEE:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+        </div>
+    </div>
+
+    <div class="section" style="margin-top: 40px; font-size: 12px; color: #666;">
+        <p><em>This document was generated automatically on {{ generated_date }}. This is a template and should be reviewed by qualified legal counsel before use. Laws vary by jurisdiction and this document may not be suitable for all transactions.</em></p>
+    </div>
+</body>
+</html>

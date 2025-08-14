@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/analytics-dashboard.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="communication-center">
+                    <i class="fas fa-comments"></i>
+                    Communication
+                </button>
+                <button class="nav-item" data-tab="campaign-management">
+                    <i class="fas fa-bullhorn"></i>
+                    Campaigns
+                </button>
+                <button class="nav-item" data-tab="scheduling">
+                    <i class="fas fa-calendar"></i>
+                    Scheduling
+                </button>
+                <button class="nav-item active" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="analytics-dashboard">
+                <!-- Header -->
+                <div class="page-header">
+                    <div class="header-content">
+                        <h1><i class="fas fa-chart-bar"></i> Communication Analytics</h1>
+                        <p>Track performance, measure ROI, and optimize your outreach campaigns</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="date-range-selector">
+                            <select id="date-range">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="export-report">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                        <button class="btn btn-primary" id="refresh-data">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analytics Tabs -->
+                <div class="analytics-tabs">
+                    <button class="tab-btn active" data-tab="overview">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Overview
+                    </button>
+                    <button class="tab-btn" data-tab="channels">
+                        <i class="fas fa-broadcast-tower"></i>
+                        Channel Performance
+                    </button>
+                    <button class="tab-btn" data-tab="campaigns">
+                        <i class="fas fa-bullhorn"></i>
+                        Campaign Analytics
+                    </button>
+                    <button class="tab-btn" data-tab="conversion">
+                        <i class="fas fa-funnel-dollar"></i>
+                        Conversion Funnel
+                    </button>
+                    <button class="tab-btn" data-tab="roi">
+                        <i class="fas fa-dollar-sign"></i>
+                        ROI Calculator
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content-container">
+                    <!-- Overview Tab -->
+                    <div id="overview-tab" class="tab-content active">
+                        <div class="overview-dashboard">
+                            <!-- Key Metrics -->
+                            <div class="metrics-overview">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="total-messages">0</div>
+                                        <div class="metric-label">Total Messages Sent</div>
+                                        <div class="metric-change positive" id="messages-change">
+                                            <i class="fas fa-arrow-up"></i> +0%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="open-rate">0%</div>
+                                        <div class="metric-label">Average Open Rate</div>
+                                        <div class="metric-change positive" id="open-rate-change">
+                                            <i class="fas fa-arrow-up"></i> +0%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-reply"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="response-rate">0%</div>
+                                        <div class="metric-label">Response Rate</div>
+                                        <div class="metric-change negative" id="response-rate-change">
+                                            <i class="fas fa-arrow-down"></i> -0%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="conversion-rate">0%</div>
+                                        <div class="metric-label">Conversion Rate</div>
+                                        <div class="metric-change positive" id="conversion-rate-change">
+                                            <i class="fas fa-arrow-up"></i> +0%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Charts -->
+                            <div class="charts-grid">
+                                <div class="chart-container">
+                                    <div class="chart-header">
+                                        <h3>Message Volume Over Time</h3>
+                                        <div class="chart-controls">
+                                            <button class="chart-control active" data-metric="sent">Sent</button>
+                                            <button class="chart-control" data-metric="delivered">Delivered</button>
+                                            <button class="chart-control" data-metric="opened">Opened</button>
+                                            <button class="chart-control" data-metric="replied">Replied</button>
+                                        </div>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="volume-chart"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="chart-container">
+                                    <div class="chart-header">
+                                        <h3>Channel Distribution</h3>
+                                    </div>
+                                    <div class="chart-wrapper">
+                                        <canvas id="channel-distribution-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Table -->
+                            <div class="performance-table-container">
+                                <div class="table-header">
+                                    <h3>Recent Campaign Performance</h3>
+                                    <button class="btn btn-secondary btn-sm" id="view-all-campaigns">
+                                        View All Campaigns
+                                    </button>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="performance-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Campaign</th>
+                                                <th>Channel</th>
+                                                <th>Sent</th>
+                                                <th>Delivered</th>
+                                                <th>Open Rate</th>
+                                                <th>Response Rate</th>
+                                                <th>Conversion Rate</th>
+                                                <th>ROI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="performance-table-body">
+                                            <!-- Performance data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Channel Performance Tab -->
+                    <div id="channels-tab" class="tab-content">
+                        <div class="channels-dashboard">
+                            <div class="channel-comparison">
+                                <div class="comparison-header">
+                                    <h2>Channel Performance Comparison</h2>
+                                    <div class="comparison-controls">
+                                        <select id="comparison-metric">
+                                            <option value="delivery_rate">Delivery Rate</option>
+                                            <option value="open_rate">Open Rate</option>
+                                            <option value="response_rate">Response Rate</option>
+                                            <option value="conversion_rate">Conversion Rate</option>
+                                            <option value="cost_per_lead">Cost per Lead</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="channel-cards">
+                                    <div class="channel-card email">
+                                        <div class="channel-header">
+                                            <div class="channel-icon">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="channel-info">
+                                                <h3>Email</h3>
+                                                <p>Professional outreach</p>
+                                            </div>
+                                        </div>
+                                        <div class="channel-metrics">
+                                            <div class="metric">
+                                                <div class="metric-value" id="email-sent">0</div>
+                                                <div class="metric-label">Sent</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="email-open-rate">0%</div>
+                                                <div class="metric-label">Open Rate</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="email-response-rate">0%</div>
+                                                <div class="metric-label">Response Rate</div>
+                                            </div>
+                                        </div>
+                                        <div class="channel-trend">
+                                            <canvas id="email-trend-chart"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="channel-card sms">
+                                        <div class="channel-header">
+                                            <div class="channel-icon">
+                                                <i class="fas fa-sms"></i>
+                                            </div>
+                                            <div class="channel-info">
+                                                <h3>SMS</h3>
+                                                <p>Direct messaging</p>
+                                            </div>
+                                        </div>
+                                        <div class="channel-metrics">
+                                            <div class="metric">
+                                                <div class="metric-value" id="sms-sent">0</div>
+                                                <div class="metric-label">Sent</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="sms-delivery-rate">0%</div>
+                                                <div class="metric-label">Delivery Rate</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="sms-response-rate">0%</div>
+                                                <div class="metric-label">Response Rate</div>
+                                            </div>
+                                        </div>
+                                        <div class="channel-trend">
+                                            <canvas id="sms-trend-chart"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="channel-card voice">
+                                        <div class="channel-header">
+                                            <div class="channel-icon">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+                                            <div class="channel-info">
+                                                <h3>Voice</h3>
+                                                <p>Personal connection</p>
+                                            </div>
+                                        </div>
+                                        <div class="channel-metrics">
+                                            <div class="metric">
+                                                <div class="metric-value" id="voice-calls">0</div>
+                                                <div class="metric-label">Calls Made</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="voice-answer-rate">0%</div>
+                                                <div class="metric-label">Answer Rate</div>
+                                            </div>
+                                            <div class="metric">
+                                                <div class="metric-value" id="voice-conversion-rate">0%</div>
+                                                <div class="metric-label">Conversion Rate</div>
+                                            </div>
+                                        </div>
+                                        <div class="channel-trend">
+                                            <canvas id="voice-trend-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="channel-insights">
+                                <div class="insights-header">
+                                    <h3>Channel Insights & Recommendations</h3>
+                                </div>
+                                <div class="insights-grid">
+                                    <div class="insight-card">
+                                        <div class="insight-icon">
+                                            <i class="fas fa-lightbulb"></i>
+                                        </div>
+                                        <div class="insight-content">
+                                            <h4>Best Performing Channel</h4>
+                                            <p id="best-channel-insight">Email shows the highest conversion rate at 12.5%</p>
+                                        </div>
+                                    </div>
+                                    <div class="insight-card">
+                                        <div class="insight-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="insight-content">
+                                            <h4>Optimal Timing</h4>
+                                            <p id="timing-insight">Tuesday-Thursday 10-11 AM shows 23% higher response rates</p>
+                                        </div>
+                                    </div>
+                                    <div class="insight-card">
+                                        <div class="insight-icon">
+                                            <i class="fas fa-target"></i>
+                                        </div>
+                                        <div class="insight-content">
+                                            <h4>Improvement Opportunity</h4>
+                                            <p id="improvement-insight">SMS delivery rate can be improved by 15% with better list hygiene</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campaign Analytics Tab -->
+                    <div id="campaigns-tab" class="tab-content">
+                        <div class="campaigns-analytics">
+                            <div class="campaigns-header">
+                                <h2>Campaign Performance Analysis</h2>
+                                <div class="campaigns-filters">
+                                    <select id="campaign-status-filter">
+                                        <option value="all">All Campaigns</option>
+                                        <option value="active">Active</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="paused">Paused</option>
+                                    </select>
+                                    <select id="campaign-type-filter">
+                                        <option value="all">All Types</option>
+                                        <option value="initial_outreach">Initial Outreach</option>
+                                        <option value="follow_up">Follow-up</option>
+                                        <option value="nurture">Nurturing</option>
+                                        <option value="reactivation">Reactivation</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="campaign-performance-chart">
+                                <div class="chart-header">
+                                    <h3>Campaign Performance Comparison</h3>
+                                    <div class="chart-controls">
+                                        <button class="chart-control active" data-metric="response_rate">Response Rate</button>
+                                        <button class="chart-control" data-metric="conversion_rate">Conversion Rate</button>
+                                        <button class="chart-control" data-metric="roi">ROI</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="campaign-comparison-chart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="campaign-details-table">
+                                <div class="table-header">
+                                    <h3>Detailed Campaign Metrics</h3>
+                                    <div class="table-actions">
+                                        <button class="btn btn-secondary btn-sm" id="export-campaign-data">
+                                            <i class="fas fa-download"></i> Export
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="campaign-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Campaign Name</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Start Date</th>
+                                                <th>Messages Sent</th>
+                                                <th>Open Rate</th>
+                                                <th>Response Rate</th>
+                                                <th>Conversions</th>
+                                                <th>ROI</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="campaign-table-body">
+                                            <!-- Campaign data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Funnel Tab -->
+                    <div id="conversion-tab" class="tab-content">
+                        <div class="conversion-dashboard">
+                            <div class="funnel-header">
+                                <h2>Conversion Funnel Analysis</h2>
+                                <p>Track how leads move through your communication funnel</p>
+                            </div>
+
+                            <div class="funnel-visualization">
+                                <div class="funnel-stage">
+                                    <div class="stage-bar" style="width: 100%;">
+                                        <div class="stage-content">
+                                            <div class="stage-title">Messages Sent</div>
+                                            <div class="stage-value" id="funnel-sent">0</div>
+                                            <div class="stage-percentage">100%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-bar" style="width: 85%;" id="funnel-delivered-bar">
+                                        <div class="stage-content">
+                                            <div class="stage-title">Delivered</div>
+                                            <div class="stage-value" id="funnel-delivered">0</div>
+                                            <div class="stage-percentage" id="funnel-delivered-pct">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-bar" style="width: 45%;" id="funnel-opened-bar">
+                                        <div class="stage-content">
+                                            <div class="stage-title">Opened</div>
+                                            <div class="stage-value" id="funnel-opened">0</div>
+                                            <div class="stage-percentage" id="funnel-opened-pct">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-bar" style="width: 15%;" id="funnel-responded-bar">
+                                        <div class="stage-content">
+                                            <div class="stage-title">Responded</div>
+                                            <div class="stage-value" id="funnel-responded">0</div>
+                                            <div class="stage-percentage" id="funnel-responded-pct">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-bar" style="width: 8%;" id="funnel-converted-bar">
+                                        <div class="stage-content">
+                                            <div class="stage-title">Converted</div>
+                                            <div class="stage-value" id="funnel-converted">0</div>
+                                            <div class="stage-percentage" id="funnel-converted-pct">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="funnel-insights">
+                                <div class="insights-grid">
+                                    <div class="insight-card">
+                                        <h4>Biggest Drop-off</h4>
+                                        <p id="biggest-dropoff">From Delivered to Opened (40% drop)</p>
+                                        <div class="insight-action">
+                                            <button class="btn btn-sm btn-primary">Improve Subject Lines</button>
+                                        </div>
+                                    </div>
+                                    <div class="insight-card">
+                                        <h4>Conversion Bottleneck</h4>
+                                        <p id="conversion-bottleneck">Response to Conversion (50% drop)</p>
+                                        <div class="insight-action">
+                                            <button class="btn btn-sm btn-primary">Optimize Follow-up</button>
+                                        </div>
+                                    </div>
+                                    <div class="insight-card">
+                                        <h4>Best Performing Segment</h4>
+                                        <p id="best-segment">High-value properties (25% conversion)</p>
+                                        <div class="insight-action">
+                                            <button class="btn btn-sm btn-primary">Scale This Segment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="funnel-breakdown">
+                                <div class="breakdown-header">
+                                    <h3>Funnel Breakdown by Channel</h3>
+                                </div>
+                                <div class="breakdown-chart">
+                                    <canvas id="funnel-breakdown-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROI Calculator Tab -->
+                    <div id="roi-tab" class="tab-content">
+                        <div class="roi-dashboard">
+                            <div class="roi-header">
+                                <h2>ROI Calculator & Analysis</h2>
+                                <p>Calculate and track return on investment for your outreach campaigns</p>
+                            </div>
+
+                            <div class="roi-calculator">
+                                <div class="calculator-header">
+                                    <h3>Campaign ROI Calculator</h3>
+                                </div>
+                                <div class="calculator-form">
+                                    <div class="form-section">
+                                        <h4>Campaign Costs</h4>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="platform-costs">Platform Costs ($)</label>
+                                                <input type="number" id="platform-costs" class="form-control" value="500" step="0.01">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="staff-time">Staff Time (hours)</label>
+                                                <input type="number" id="staff-time" class="form-control" value="20" step="0.5">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="hourly-rate">Hourly Rate ($)</label>
+                                                <input type="number" id="hourly-rate" class="form-control" value="50" step="0.01">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="other-costs">Other Costs ($)</label>
+                                                <input type="number" id="other-costs" class="form-control" value="0" step="0.01">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="total-cost">Total Cost ($)</label>
+                                                <input type="number" id="total-cost" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-section">
+                                        <h4>Campaign Results</h4>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="leads-generated">Leads Generated</label>
+                                                <input type="number" id="leads-generated" class="form-control" value="50">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="deals-closed">Deals Closed</label>
+                                                <input type="number" id="deals-closed" class="form-control" value="3">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="avg-deal-value">Avg Deal Value ($)</label>
+                                                <input type="number" id="avg-deal-value" class="form-control" value="15000" step="0.01">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="total-revenue">Total Revenue ($)</label>
+                                                <input type="number" id="total-revenue" class="form-control" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="net-profit">Net Profit ($)</label>
+                                                <input type="number" id="net-profit" class="form-control" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="roi-percentage">ROI (%)</label>
+                                                <input type="number" id="roi-percentage" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="calculator-results">
+                                    <div class="result-card">
+                                        <div class="result-icon">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </div>
+                                        <div class="result-content">
+                                            <div class="result-value" id="result-roi">0%</div>
+                                            <div class="result-label">Return on Investment</div>
+                                        </div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div class="result-content">
+                                            <div class="result-value" id="result-cpl">$0</div>
+                                            <div class="result-label">Cost per Lead</div>
+                                        </div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">
+                                            <i class="fas fa-handshake"></i>
+                                        </div>
+                                        <div class="result-content">
+                                            <div class="result-value" id="result-cpa">$0</div>
+                                            <div class="result-label">Cost per Acquisition</div>
+                                        </div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">
+                                            <i class="fas fa-percentage"></i>
+                                        </div>
+                                        <div class="result-content">
+                                            <div class="result-value" id="result-conversion">0%</div>
+                                            <div class="result-label">Conversion Rate</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="roi-history">
+                                <div class="history-header">
+                                    <h3>ROI History & Trends</h3>
+                                </div>
+                                <div class="history-chart">
+                                    <canvas id="roi-history-chart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="roi-benchmarks">
+                                <div class="benchmarks-header">
+                                    <h3>Industry Benchmarks</h3>
+                                </div>
+                                <div class="benchmarks-grid">
+                                    <div class="benchmark-card">
+                                        <div class="benchmark-metric">Email Open Rate</div>
+                                        <div class="benchmark-comparison">
+                                            <div class="your-metric">Your: <span id="your-email-open">0%</span></div>
+                                            <div class="industry-metric">Industry: 25%</div>
+                                            <div class="benchmark-status good" id="email-open-status">Above Average</div>
+                                        </div>
+                                    </div>
+                                    <div class="benchmark-card">
+                                        <div class="benchmark-metric">Response Rate</div>
+                                        <div class="benchmark-comparison">
+                                            <div class="your-metric">Your: <span id="your-response-rate">0%</span></div>
+                                            <div class="industry-metric">Industry: 8%</div>
+                                            <div class="benchmark-status average" id="response-rate-status">Average</div>
+                                        </div>
+                                    </div>
+                                    <div class="benchmark-card">
+                                        <div class="benchmark-metric">Cost per Lead</div>
+                                        <div class="benchmark-comparison">
+                                            <div class="your-metric">Your: <span id="your-cpl">$0</span></div>
+                                            <div class="industry-metric">Industry: $45</div>
+                                            <div class="benchmark-status poor" id="cpl-status">Below Average</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Date Range Modal -->
+    <div class="modal-overlay" id="date-range-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Custom Date Range</h2>
+                <button class="modal-close" id="close-date-range-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-date">Start Date</label>
+                        <input type="date" id="start-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">End Date</label>
+                        <input type="date" id="end-date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-date-range">Cancel</button>
+                <button class="btn btn-primary" id="apply-date-range">Apply Range</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/analytics-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Management - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/lead-management.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="deal-finder">
+                    <i class="fas fa-search"></i>
+                    Deal Finder
+                </button>
+                <button class="nav-item active" data-tab="lead-management">
+                    <i class="fas fa-users"></i>
+                    Lead Management
+                </button>
+                <button class="nav-item" data-tab="investment-criteria">
+                    <i class="fas fa-filter"></i>
+                    Investment Criteria
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="lead-management-container" class="lead-management-container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1><i class="fas fa-users"></i> Lead Management</h1>
+                    <p>Manage and track your property leads and communications</p>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="lead-controls">
+                    <!-- Search and Actions -->
+                    <div class="controls-row">
+                        <div class="search-container">
+                            <div class="search-input-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="lead-search" placeholder="Search leads, owners, properties..." autocomplete="off">
+                            </div>
+                        </div>
+                        
+                        <div class="view-toggle">
+                            <button id="list-view-btn" class="btn btn-secondary active">
+                                <i class="fas fa-list"></i> List
+                            </button>
+                            <button id="kanban-view-btn" class="btn btn-secondary">
+                                <i class="fas fa-columns"></i> Kanban
+                            </button>
+                        </div>
+                        
+                        <button id="refresh-leads-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <!-- Filters and Sort -->
+                    <div class="controls-row">
+                        <div class="filters-container">
+                            <select id="status-filter">
+                                <option value="">All Statuses</option>
+                                <option value="new">New</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="interested">Interested</option>
+                                <option value="qualified">Qualified</option>
+                                <option value="under_contract">Under Contract</option>
+                                <option value="closed">Closed</option>
+                                <option value="not_interested">Not Interested</option>
+                                <option value="do_not_contact">Do Not Contact</option>
+                            </select>
+                            
+                            <select id="source-filter">
+                                <option value="">All Sources</option>
+                                <option value="mls">MLS</option>
+                                <option value="foreclosure">Foreclosure</option>
+                                <option value="public_records">Public Records</option>
+                                <option value="off_market">Off Market</option>
+                                <option value="referral">Referral</option>
+                                <option value="direct_mail">Direct Mail</option>
+                                <option value="online">Online</option>
+                            </select>
+                            
+                            <select id="assigned-filter" class="user-selector">
+                                <option value="">All Users</option>
+                            </select>
+                            
+                            <div class="sort-controls">
+                                <select id="sort-by">
+                                    <option value="created_at">Date Added</option>
+                                    <option value="lead_score">Lead Score</option>
+                                    <option value="last_contact_date">Last Contact</option>
+                                    <option value="owner_name">Owner Name</option>
+                                    <option value="status">Status</option>
+                                </select>
+                                
+                                <select id="sort-order">
+                                    <option value="desc">Descending</option>
+                                    <option value="asc">Ascending</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="leads-stats" class="leads-stats">
+                            <!-- Stats will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div id="bulk-actions" class="bulk-actions hidden">
+                    <div class="bulk-info">
+                        <span id="selected-count">0</span> leads selected
+                    </div>
+                    <div class="bulk-buttons">
+                        <button id="bulk-assign-btn" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-user-plus"></i> Assign
+                        </button>
+                        <button id="bulk-status-btn" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-tag"></i> Change Status
+                        </button>
+                        <button id="bulk-delete-btn" class="btn btn-sm btn-error">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="lead-content">
+                    <!-- List View -->
+                    <div id="leads-list-container" class="leads-container">
+                        <div id="leads-list" class="leads-list">
+                            <!-- Lead list will be populated by JavaScript -->
+                        </div>
+                        
+                        <div id="leads-pagination" class="leads-pagination">
+                            <!-- Pagination will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Kanban View -->
+                    <div id="leads-kanban-container" class="leads-container hidden">
+                        <div id="leads-kanban" class="leads-kanban">
+                            <!-- Kanban board will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lead Details Modal -->
+    <div id="lead-details-modal" class="modal-overlay">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Lead Details</h2>
+                <button class="modal-close" onclick="leadManagement.hideModal('lead-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="lead-details-content">
+                    <!-- Lead Information Form -->
+                    <div class="details-section">
+                        <h3>Lead Information</h3>
+                        <form class="lead-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lead-owner-name">Owner Name</label>
+                                    <input type="text" id="lead-owner-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lead-owner-email">Email</label>
+                                    <input type="email" id="lead-owner-email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lead-owner-phone">Phone</label>
+                                    <input type="tel" id="lead-owner-phone">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lead-property-address">Property Address</label>
+                                    <input type="text" id="lead-property-address">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lead-status">Status</label>
+                                    <select id="lead-status">
+                                        <option value="new">New</option>
+                                        <option value="contacted">Contacted</option>
+                                        <option value="interested">Interested</option>
+                                        <option value="qualified">Qualified</option>
+                                        <option value="under_contract">Under Contract</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="not_interested">Not Interested</option>
+                                        <option value="do_not_contact">Do Not Contact</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lead-assigned-to">Assigned To</label>
+                                    <select id="lead-assigned-to" class="user-selector">
+                                        <option value="">Unassigned</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lead-score">Lead Score</label>
+                                    <input type="number" id="lead-score" min="0" max="100">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="lead-notes">Notes</label>
+                                    <textarea id="lead-notes" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Communication History -->
+                    <div class="details-section">
+                        <h3>Communication History</h3>
+                        <div id="communication-history" class="communication-history">
+                            <!-- Communication history will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="details-section">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button id="send-email-btn" class="btn btn-secondary">
+                                <i class="fas fa-envelope"></i> Send Email
+                            </button>
+                            <button id="send-sms-btn" class="btn btn-secondary">
+                                <i class="fas fa-sms"></i> Send SMS
+                            </button>
+                            <button id="make-call-btn" class="btn btn-secondary">
+                                <i class="fas fa-phone"></i> Make Call
+                            </button>
+                            <button id="schedule-followup-btn" class="btn btn-secondary">
+                                <i class="fas fa-calendar-plus"></i> Schedule Follow-up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="delete-lead-btn" class="btn btn-error">
+                    <i class="fas fa-trash"></i> Delete Lead
+                </button>
+                <button id="save-lead-btn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Assign Modal -->
+    <div id="bulk-assign-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Bulk Assign Leads</h2>
+                <button class="modal-close" onclick="leadManagement.hideModal('bulk-assign-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bulk-assign-user">Assign to User</label>
+                    <select id="bulk-assign-user" class="user-selector">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="leadManagement.hideModal('bulk-assign-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="leadManagement.executeBulkAssign()">Assign Leads</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Status Modal -->
+    <div id="bulk-status-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-tag"></i> Bulk Change Status</h2>
+                <button class="modal-close" onclick="leadManagement.hideModal('bulk-status-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bulk-status-select">New Status</label>
+                    <select id="bulk-status-select">
+                        <option value="">Select Status</option>
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="interested">Interested</option>
+                        <option value="qualified">Qualified</option>
+                        <option value="under_contract">Under Contract</option>
+                        <option value="closed">Closed</option>
+                        <option value="not_interested">Not Interested</option>
+                        <option value="do_not_contact">Do Not Contact</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="leadManagement.hideModal('bulk-status-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="leadManagement.executeBulkStatusChange()">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="email-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-envelope"></i> Send Email</h2>
+                <button class="modal-close" onclick="leadManagement.hideModal('email-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="email-form">
+                    <div class="form-group">
+                        <label for="email-subject">Subject</label>
+                        <input type="text" id="email-subject" placeholder="Email subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-body">Message</label>
+                        <textarea id="email-body" rows="8" placeholder="Email message"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="leadManagement.hideModal('email-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="leadManagement.sendEmail()">Send Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Modal -->
+    <div id="sms-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sms"></i> Send SMS</h2>
+                <button class="modal-close" onclick="leadManagement.hideModal('sms-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="sms-form">
+                    <div class="form-group">
+                        <label for="sms-message">Message</label>
+                        <textarea id="sms-message" rows="4" placeholder="SMS message" maxlength="160"></textarea>
+                        <small class="char-count">0/160 characters</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="leadManagement.hideModal('sms-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="leadManagement.sendSMS()">Send SMS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/lead-management.js"></script>
+    
+    <script>
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Character counter for SMS
+        document.getElementById('sms-message')?.addEventListener('input', (e) => {
+            const charCount = e.target.value.length;
+            const counter = document.querySelector('.char-count');
+            if (counter) {
+                counter.textContent = `${charCount}/160 characters`;
+                counter.style.color = charCount > 160 ? '#ef4444' : '#6b7280';
+            }
+        });
+    </script>
+</body>
+</html>

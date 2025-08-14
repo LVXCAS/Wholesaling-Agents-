@@ -1,0 +1,54 @@
+{
+    "name": "Real Estate Analyzer",
+    "dockerComposeFile": [
+        "../docker/docker-compose.yml"
+    ],
+    "service": "app",
+    "workspaceFolder": "/app",
+    "features": {},
+    "forwardPorts": [
+        8000,
+        5432
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.flake8",
+                "ms-python.black-formatter",
+                "mtxr.sqltools",
+                "mtxr.sqltools-driver-pg",
+                "visualstudioexptteam.vscodeintellicode",
+                "github.copilot"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.flake8Enabled": true,
+                "python.linting.pylintEnabled": false,
+                "python.formatting.provider": "black",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "explicit"
+                    }
+                },
+                "sqltools.connections": [
+                    {
+                        "name": "Docker DB (Codespace)",
+                        "driver": "PostgreSQL",
+                        "previewLimit": 50,
+                        "server": "localhost",
+                        "port": 5432,
+                        "database": "realestate_db",
+                        "username": "realestate_user",
+                        "password": "realestate_password"
+                    }
+                ]
+            }
+        }
+    },
+    "postCreateCommand": "sudo chown -R vscode /app && pip install -r requirements.txt && python run.py db init-db",
+    "remoteUser": "vscode"
+}

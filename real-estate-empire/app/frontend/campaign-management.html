@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Management - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/campaign-management.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="communication-center">
+                    <i class="fas fa-comments"></i>
+                    Communication
+                </button>
+                <button class="nav-item active" data-tab="campaign-management">
+                    <i class="fas fa-bullhorn"></i>
+                    Campaigns
+                </button>
+                <button class="nav-item" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </button>
+                <button class="nav-item" data-tab="scheduling">
+                    <i class="fas fa-calendar"></i>
+                    Scheduling
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="campaign-management">
+                <!-- Header -->
+                <div class="page-header">
+                    <div class="header-content">
+                        <h1><i class="fas fa-bullhorn"></i> Campaign Management</h1>
+                        <p>Create, monitor, and optimize your outreach campaigns</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="import-leads">
+                            <i class="fas fa-upload"></i> Import Leads
+                        </button>
+                        <button class="btn btn-primary" id="create-campaign">
+                            <i class="fas fa-plus"></i> New Campaign
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Campaign Tabs -->
+                <div class="campaign-tabs">
+                    <button class="tab-btn active" data-tab="campaigns">
+                        <i class="fas fa-list"></i>
+                        All Campaigns
+                    </button>
+                    <button class="tab-btn" data-tab="builder">
+                        <i class="fas fa-tools"></i>
+                        Campaign Builder
+                    </button>
+                    <button class="tab-btn" data-tab="analytics">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics Dashboard
+                    </button>
+                    <button class="tab-btn" data-tab="ab-testing">
+                        <i class="fas fa-flask"></i>
+                        A/B Testing
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content-container">
+                    <!-- All Campaigns Tab -->
+                    <div id="campaigns-tab" class="tab-content active">
+                        <div class="campaigns-header">
+                            <div class="campaigns-filters">
+                                <div class="filter-group">
+                                    <label>Status:</label>
+                                    <select id="status-filter">
+                                        <option value="all">All Campaigns</option>
+                                        <option value="active">Active</option>
+                                        <option value="paused">Paused</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label>Channel:</label>
+                                    <select id="channel-filter">
+                                        <option value="all">All Channels</option>
+                                        <option value="email">Email</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="voice">Voice</option>
+                                        <option value="multi">Multi-Channel</option>
+                                    </select>
+                                </div>
+                                <div class="search-group">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="campaign-search" placeholder="Search campaigns...">
+                                </div>
+                            </div>
+                            <div class="campaigns-actions">
+                                <button class="btn btn-secondary" id="bulk-actions">
+                                    <i class="fas fa-tasks"></i> Bulk Actions
+                                </button>
+                                <button class="btn btn-secondary" id="export-campaigns">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="campaigns-grid" id="campaigns-grid">
+                            <!-- Campaign cards will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Campaign Builder Tab -->
+                    <div id="builder-tab" class="tab-content">
+                        <div class="campaign-builder">
+                            <div class="builder-steps">
+                                <div class="step active" data-step="1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Campaign Details</div>
+                                </div>
+                                <div class="step" data-step="2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Target Audience</div>
+                                </div>
+                                <div class="step" data-step="3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Message Content</div>
+                                </div>
+                                <div class="step" data-step="4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">Schedule & Launch</div>
+                                </div>
+                            </div>
+
+                            <div class="builder-content">
+                                <!-- Step 1: Campaign Details -->
+                                <div class="step-content active" data-step="1">
+                                    <div class="step-header">
+                                        <h2>Campaign Details</h2>
+                                        <p>Set up the basic information for your campaign</p>
+                                    </div>
+                                    <div class="form-container">
+                                        <div class="form-group">
+                                            <label for="campaign-name">Campaign Name *</label>
+                                            <input type="text" id="campaign-name" class="form-control" placeholder="Enter campaign name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="campaign-description">Description</label>
+                                            <textarea id="campaign-description" class="form-control" rows="3" placeholder="Describe your campaign goals and strategy"></textarea>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="campaign-type">Campaign Type *</label>
+                                                <select id="campaign-type" class="form-control">
+                                                    <option value="">Select Type</option>
+                                                    <option value="initial_outreach">Initial Outreach</option>
+                                                    <option value="follow_up">Follow-up Sequence</option>
+                                                    <option value="nurture">Lead Nurturing</option>
+                                                    <option value="reactivation">Reactivation</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="campaign-priority">Priority</label>
+                                                <select id="campaign-priority" class="form-control">
+                                                    <option value="normal">Normal</option>
+                                                    <option value="high">High</option>
+                                                    <option value="urgent">Urgent</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Communication Channels *</label>
+                                            <div class="channel-selection">
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="channel-email" value="email">
+                                                    <i class="fas fa-envelope"></i>
+                                                    Email
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="channel-sms" value="sms">
+                                                    <i class="fas fa-sms"></i>
+                                                    SMS
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="channel-voice" value="voice">
+                                                    <i class="fas fa-phone"></i>
+                                                    Voice
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Target Audience -->
+                                <div class="step-content" data-step="2">
+                                    <div class="step-header">
+                                        <h2>Target Audience</h2>
+                                        <p>Define who will receive this campaign</p>
+                                    </div>
+                                    <div class="audience-selector">
+                                        <div class="audience-options">
+                                            <div class="audience-option" data-option="all-leads">
+                                                <div class="option-icon">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <div class="option-content">
+                                                    <h3>All Leads</h3>
+                                                    <p>Send to all leads in your database</p>
+                                                    <span class="lead-count">0 leads</span>
+                                                </div>
+                                            </div>
+                                            <div class="audience-option" data-option="filtered-leads">
+                                                <div class="option-icon">
+                                                    <i class="fas fa-filter"></i>
+                                                </div>
+                                                <div class="option-content">
+                                                    <h3>Filtered Leads</h3>
+                                                    <p>Apply filters to target specific leads</p>
+                                                    <span class="lead-count">0 leads</span>
+                                                </div>
+                                            </div>
+                                            <div class="audience-option" data-option="custom-list">
+                                                <div class="option-icon">
+                                                    <i class="fas fa-list"></i>
+                                                </div>
+                                                <div class="option-content">
+                                                    <h3>Custom List</h3>
+                                                    <p>Upload or select a custom list</p>
+                                                    <span class="lead-count">0 leads</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="audience-filters" id="audience-filters" style="display: none;">
+                                            <h3>Lead Filters</h3>
+                                            <div class="filter-grid">
+                                                <div class="form-group">
+                                                    <label>Property Type</label>
+                                                    <select class="form-control" id="filter-property-type">
+                                                        <option value="">All Types</option>
+                                                        <option value="single_family">Single Family</option>
+                                                        <option value="multi_family">Multi Family</option>
+                                                        <option value="condo">Condo</option>
+                                                        <option value="commercial">Commercial</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Location</label>
+                                                    <input type="text" class="form-control" id="filter-location" placeholder="City, State, ZIP">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Lead Source</label>
+                                                    <select class="form-control" id="filter-source">
+                                                        <option value="">All Sources</option>
+                                                        <option value="mls">MLS</option>
+                                                        <option value="foreclosure">Foreclosure</option>
+                                                        <option value="public_records">Public Records</option>
+                                                        <option value="referral">Referral</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Lead Score</label>
+                                                    <select class="form-control" id="filter-score">
+                                                        <option value="">All Scores</option>
+                                                        <option value="high">High (80-100)</option>
+                                                        <option value="medium">Medium (50-79)</option>
+                                                        <option value="low">Low (0-49)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="filter-preview">
+                                                <div class="preview-stats">
+                                                    <span id="filtered-count">0</span> leads match your criteria
+                                                </div>
+                                                <button class="btn btn-secondary" id="preview-leads">
+                                                    <i class="fas fa-eye"></i> Preview Leads
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Message Content -->
+                                <div class="step-content" data-step="3">
+                                    <div class="step-header">
+                                        <h2>Message Content</h2>
+                                        <p>Create your campaign messages for each channel</p>
+                                    </div>
+                                    <div class="message-builder">
+                                        <div class="channel-tabs" id="message-channel-tabs">
+                                            <!-- Channel tabs will be populated based on selected channels -->
+                                        </div>
+                                        <div class="message-editor" id="message-editor">
+                                            <!-- Message editors will be populated for each channel -->
+                                        </div>
+                                        <div class="message-tools">
+                                            <button class="btn btn-secondary" id="use-template-btn">
+                                                <i class="fas fa-file-alt"></i> Use Template
+                                            </button>
+                                            <button class="btn btn-secondary" id="ai-generate-btn">
+                                                <i class="fas fa-magic"></i> AI Generate
+                                            </button>
+                                            <button class="btn btn-secondary" id="preview-message-btn">
+                                                <i class="fas fa-eye"></i> Preview
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Schedule & Launch -->
+                                <div class="step-content" data-step="4">
+                                    <div class="step-header">
+                                        <h2>Schedule & Launch</h2>
+                                        <p>Set timing and launch your campaign</p>
+                                    </div>
+                                    <div class="schedule-options">
+                                        <div class="schedule-type">
+                                            <label class="radio-label">
+                                                <input type="radio" name="schedule-type" value="immediate" checked>
+                                                <div class="radio-content">
+                                                    <h3>Send Immediately</h3>
+                                                    <p>Start the campaign right away</p>
+                                                </div>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="schedule-type" value="scheduled">
+                                                <div class="radio-content">
+                                                    <h3>Schedule for Later</h3>
+                                                    <p>Set a specific date and time</p>
+                                                </div>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="schedule-type" value="sequence">
+                                                <div class="radio-content">
+                                                    <h3>Multi-Step Sequence</h3>
+                                                    <p>Create a series of timed messages</p>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div class="schedule-details" id="schedule-details">
+                                            <!-- Schedule details will be shown based on selected type -->
+                                        </div>
+
+                                        <div class="campaign-summary">
+                                            <h3>Campaign Summary</h3>
+                                            <div class="summary-grid">
+                                                <div class="summary-item">
+                                                    <label>Campaign Name:</label>
+                                                    <span id="summary-name">-</span>
+                                                </div>
+                                                <div class="summary-item">
+                                                    <label>Target Audience:</label>
+                                                    <span id="summary-audience">-</span>
+                                                </div>
+                                                <div class="summary-item">
+                                                    <label>Channels:</label>
+                                                    <span id="summary-channels">-</span>
+                                                </div>
+                                                <div class="summary-item">
+                                                    <label>Schedule:</label>
+                                                    <span id="summary-schedule">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="builder-navigation">
+                                <button class="btn btn-secondary" id="prev-step" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <div class="nav-spacer"></div>
+                                <button class="btn btn-secondary" id="save-draft">
+                                    <i class="fas fa-save"></i> Save Draft
+                                </button>
+                                <button class="btn btn-primary" id="next-step">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                                <button class="btn btn-success" id="launch-campaign" style="display: none;">
+                                    <i class="fas fa-rocket"></i> Launch Campaign
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Dashboard Tab -->
+                    <div id="analytics-tab" class="tab-content">
+                        <div class="analytics-dashboard">
+                            <div class="analytics-header">
+                                <h2>Campaign Analytics</h2>
+                                <div class="date-range-selector">
+                                    <select id="analytics-period">
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30">Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="analytics-overview">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="total-sent">0</div>
+                                        <div class="metric-label">Messages Sent</div>
+                                        <div class="metric-change positive">
+                                            <i class="fas fa-arrow-up"></i> +12%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="open-rate">0%</div>
+                                        <div class="metric-label">Open Rate</div>
+                                        <div class="metric-change positive">
+                                            <i class="fas fa-arrow-up"></i> +3.2%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-reply"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="response-rate">0%</div>
+                                        <div class="metric-label">Response Rate</div>
+                                        <div class="metric-change negative">
+                                            <i class="fas fa-arrow-down"></i> -1.1%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div class="metric-content">
+                                        <div class="metric-value" id="roi">0%</div>
+                                        <div class="metric-label">ROI</div>
+                                        <div class="metric-change positive">
+                                            <i class="fas fa-arrow-up"></i> +8.5%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="analytics-charts">
+                                <div class="chart-container">
+                                    <div class="chart-header">
+                                        <h3>Campaign Performance Over Time</h3>
+                                        <div class="chart-controls">
+                                            <button class="chart-control active" data-metric="sent">Sent</button>
+                                            <button class="chart-control" data-metric="opened">Opened</button>
+                                            <button class="chart-control" data-metric="replied">Replied</button>
+                                        </div>
+                                    </div>
+                                    <canvas id="performance-chart"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <div class="chart-header">
+                                        <h3>Channel Performance</h3>
+                                    </div>
+                                    <canvas id="channel-chart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="campaign-performance-table">
+                                <div class="table-header">
+                                    <h3>Campaign Performance Details</h3>
+                                    <button class="btn btn-secondary" id="export-analytics">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="performance-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Campaign</th>
+                                                <th>Channel</th>
+                                                <th>Sent</th>
+                                                <th>Delivered</th>
+                                                <th>Opened</th>
+                                                <th>Replied</th>
+                                                <th>ROI</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="performance-table-body">
+                                            <!-- Performance data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- A/B Testing Tab -->
+                    <div id="ab-testing-tab" class="tab-content">
+                        <div class="ab-testing">
+                            <div class="ab-header">
+                                <h2>A/B Testing</h2>
+                                <p>Test different versions of your campaigns to optimize performance</p>
+                                <button class="btn btn-primary" id="create-ab-test">
+                                    <i class="fas fa-plus"></i> Create A/B Test
+                                </button>
+                            </div>
+
+                            <div class="ab-tests-list" id="ab-tests-list">
+                                <!-- A/B tests will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Campaign Details Modal -->
+    <div class="modal-overlay" id="campaign-modal">
+        <div class="modal large">
+            <div class="modal-header">
+                <h2 class="modal-title" id="campaign-modal-title">Campaign Details</h2>
+                <button class="modal-close" id="close-campaign-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="campaign-modal-body">
+                <!-- Campaign details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/campaign-management.js"></script>
+</body>
+</html>

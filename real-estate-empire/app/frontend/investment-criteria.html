@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Criteria Editor - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/investment-criteria.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="deal-finder">
+                    <i class="fas fa-search"></i>
+                    Deal Finder
+                </button>
+                <button class="nav-item active" data-tab="investment-criteria">
+                    <i class="fas fa-filter"></i>
+                    Investment Criteria
+                </button>
+                <button class="nav-item" data-tab="property-input">
+                    <i class="fas fa-plus"></i>
+                    Add Property
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="criteria-editor-container" class="criteria-editor-container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1><i class="fas fa-filter"></i> Investment Criteria Editor</h1>
+                    <p>Define and manage your investment criteria to filter deals automatically</p>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="criteria-toolbar">
+                    <div class="toolbar-left">
+                        <button id="new-criteria-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Criteria
+                        </button>
+                        <button id="load-template-btn" class="btn btn-secondary">
+                            <i class="fas fa-folder-open"></i> Load Template
+                        </button>
+                        <select id="template-selector" class="template-selector">
+                            <option value="">Select a template...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="toolbar-right">
+                        <button id="test-criteria-btn" class="btn btn-secondary">
+                            <i class="fas fa-flask"></i> Test Criteria
+                        </button>
+                        <button id="save-template-btn" class="btn btn-secondary">
+                            <i class="fas fa-save"></i> Save as Template
+                        </button>
+                        <button id="save-criteria-btn" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Save Criteria
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="criteria-content">
+                    <!-- Criteria Form -->
+                    <div class="criteria-form-container">
+                        <form id="criteria-form" class="criteria-form">
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="criteria-name">Criteria Name *</label>
+                                        <input type="text" id="criteria-name" required placeholder="e.g., Buy & Hold Rental Criteria">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="strategy-type">Investment Strategy *</label>
+                                        <select id="strategy-type" required>
+                                            <option value="">Select Strategy</option>
+                                            <option value="rental">Buy & Hold Rental</option>
+                                            <option value="flip">Fix & Flip</option>
+                                            <option value="wholesale">Wholesale</option>
+                                            <option value="brrrr">BRRRR</option>
+                                            <option value="commercial">Commercial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="criteria-description">Description</label>
+                                        <textarea id="criteria-description" rows="3" placeholder="Describe your investment criteria and goals..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="criteria-active">
+                                            <input type="checkbox" id="criteria-active" checked>
+                                            Active (use for filtering)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Location Criteria -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-map-marker-alt"></i> Location Criteria</h2>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="target-markets">Target Markets</label>
+                                        <input type="text" id="target-markets" placeholder="e.g., Atlanta, GA; Nashville, TN (comma separated)">
+                                        <small>Leave empty to include all markets</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exclude-markets">Exclude Markets</label>
+                                        <input type="text" id="exclude-markets" placeholder="e.g., San Francisco, CA; New York, NY">
+                                        <small>Markets to exclude from consideration</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="max-distance">Max Distance from Target (miles)</label>
+                                        <input type="number" id="max-distance" min="1" max="500" value="50">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Property Criteria -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-home"></i> Property Criteria</h2>
+                                
+                                <div class="form-group">
+                                    <label>Property Types</label>
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" name="property-types" value="single_family" checked> Single Family</label>
+                                        <label><input type="checkbox" name="property-types" value="multi_family"> Multi Family</label>
+                                        <label><input type="checkbox" name="property-types" value="condo"> Condo</label>
+                                        <label><input type="checkbox" name="property-types" value="townhouse"> Townhouse</label>
+                                        <label><input type="checkbox" name="property-types" value="commercial"> Commercial</label>
+                                        <label><input type="checkbox" name="property-types" value="land"> Land</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-bedrooms">Min Bedrooms</label>
+                                        <input type="number" id="min-bedrooms" min="0" max="10" value="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-bedrooms">Max Bedrooms</label>
+                                        <input type="number" id="max-bedrooms" min="0" max="10" placeholder="No limit">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="min-bathrooms">Min Bathrooms</label>
+                                        <input type="number" id="min-bathrooms" min="0" max="10" step="0.5" value="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-bathrooms">Max Bathrooms</label>
+                                        <input type="number" id="max-bathrooms" min="0" max="10" step="0.5" placeholder="No limit">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-square-feet">Min Square Feet</label>
+                                        <input type="number" id="min-square-feet" min="0" value="800">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-square-feet">Max Square Feet</label>
+                                        <input type="number" id="max-square-feet" min="0" placeholder="No limit">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="min-year-built">Min Year Built</label>
+                                        <input type="number" id="min-year-built" min="1800" max="2024" value="1950">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-year-built">Max Year Built</label>
+                                        <input type="number" id="max-year-built" min="1800" max="2024" placeholder="No limit">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Financial Criteria -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-dollar-sign"></i> Financial Criteria</h2>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="max-price">Max Purchase Price</label>
+                                        <input type="range" id="max-price" min="50000" max="1000000" step="10000" value="300000">
+                                        <div class="range-display">
+                                            <span>$50K</span>
+                                            <span id="max-price-value">$300,000</span>
+                                            <span>$1M</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-arv">Min After Repair Value (ARV)</label>
+                                        <input type="range" id="min-arv" min="100000" max="1500000" step="10000" value="200000">
+                                        <div class="range-display">
+                                            <span>$100K</span>
+                                            <span id="min-arv-value">$200,000</span>
+                                            <span>$1.5M</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-repair-cost">Max Repair Cost</label>
+                                        <input type="range" id="max-repair-cost" min="0" max="200000" step="5000" value="50000">
+                                        <div class="range-display">
+                                            <span>$0</span>
+                                            <span id="max-repair-cost-value">$50,000</span>
+                                            <span>$200K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-cap-rate">Min Cap Rate</label>
+                                        <input type="range" id="min-cap-rate" min="0" max="20" step="0.5" value="8">
+                                        <div class="range-display">
+                                            <span>0%</span>
+                                            <span id="min-cap-rate-value">8%</span>
+                                            <span>20%</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="min-coc-return">Min Cash-on-Cash Return</label>
+                                        <input type="range" id="min-coc-return" min="0" max="30" step="0.5" value="12">
+                                        <div class="range-display">
+                                            <span>0%</span>
+                                            <span id="min-coc-return-value">12%</span>
+                                            <span>30%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-roi">Min ROI</label>
+                                        <input type="range" id="min-roi" min="0" max="50" step="1" value="15">
+                                        <div class="range-display">
+                                            <span>0%</span>
+                                            <span id="min-roi-value">15%</span>
+                                            <span>50%</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="max-ltv">Max Loan-to-Value</label>
+                                        <input type="range" id="max-ltv" min="50" max="100" step="5" value="80">
+                                        <div class="range-display">
+                                            <span>50%</span>
+                                            <span id="max-ltv-value">80%</span>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="min-rent-ratio">Min Rent-to-Price Ratio</label>
+                                        <input type="range" id="min-rent-ratio" min="0.5" max="3" step="0.1" value="1">
+                                        <div class="range-display">
+                                            <span>0.5%</span>
+                                            <span id="min-rent-ratio-value">1%</span>
+                                            <span>3%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Deal Criteria -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-handshake"></i> Deal Criteria</h2>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="max-days-on-market">Max Days on Market</label>
+                                        <input type="number" id="max-days-on-market" min="0" max="365" value="90">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="min-equity-percentage">Min Equity Percentage</label>
+                                        <input type="range" id="min-equity-percentage" min="0" max="50" step="1" value="20">
+                                        <div class="range-display">
+                                            <span>0%</span>
+                                            <span id="min-equity-percentage-value">20%</span>
+                                            <span>50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="require-seller-financing">
+                                            <input type="checkbox" id="require-seller-financing">
+                                            Require Seller Financing
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="allow-short-sales">
+                                            <input type="checkbox" id="allow-short-sales" checked>
+                                            Allow Short Sales
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="allow-foreclosures">
+                                            <input type="checkbox" id="allow-foreclosures" checked>
+                                            Allow Foreclosures
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Risk Criteria -->
+                            <div class="form-section">
+                                <h2><i class="fas fa-shield-alt"></i> Risk Criteria</h2>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="max-crime-score">Max Crime Score (1-10)</label>
+                                        <input type="range" id="max-crime-score" min="1" max="10" step="1" value="7">
+                                        <div class="range-display">
+                                            <span>1 (Low)</span>
+                                            <span id="max-crime-score-value">7</span>
+                                            <span>10 (High)</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="min-school-rating">Min School Rating (1-10)</label>
+                                        <input type="range" id="min-school-rating" min="1" max="10" step="1" value="5">
+                                        <div class="range-display">
+                                            <span>1 (Poor)</span>
+                                            <span id="min-school-rating-value">5</span>
+                                            <span>10 (Excellent)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="flood-zone-acceptable">
+                                            <input type="checkbox" id="flood-zone-acceptable">
+                                            Accept Properties in Flood Zones
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="environmental-issues-acceptable">
+                                            <input type="checkbox" id="environmental-issues-acceptable">
+                                            Accept Properties with Environmental Issues
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Impact Visualization -->
+                    <div class="impact-panel">
+                        <div id="impact-visualization" class="impact-visualization">
+                            <!-- Impact visualization will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Template Selector Modal -->
+    <div id="template-selector-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-folder-open"></i> Select Template</h2>
+                <button class="modal-close" onclick="hideModal('template-selector-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="template-grid">
+                    <!-- Templates will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Results Modal -->
+    <div id="test-results-modal" class="modal-overlay">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-flask"></i> Criteria Test Results</h2>
+                <button class="modal-close" onclick="hideModal('test-results-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="test-results-content">
+                <!-- Test results will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/investment-criteria-editor.js"></script>
+    
+    <script>
+        // Global functions for modal management
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

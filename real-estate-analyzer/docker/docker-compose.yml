@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..  # Context is the project root (real-estate-analyzer/)
+      dockerfile: docker/Dockerfile # Path to Dockerfile relative to context
+    ports:
+      - "8000:8000" # Map host port 8000 to container port 8000
+    volumes:
+      - ..:/app  # Mount the project root to /app in the container
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://realestate_user:realestate_password@db:5432/realestate_db
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - API_RATE_LIMIT=${API_RATE_LIMIT:-100}
+      - CACHE_TTL=${CACHE_TTL:-3600}
+      - ANALYSIS_RADIUS=${ANALYSIS_RADIUS:-0.5}
+      - MAX_PROPERTY_AGE=${MAX_PROPERTY_AGE:-6}
+    # The command can be set here to override CMD in Dockerfile, useful for development
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Persist database data
+    environment:
+      - POSTGRES_USER=realestate_user
+      - POSTGRES_PASSWORD=realestate_password
+      - POSTGRES_DB=realestate_db
+    ports:
+      - "5432:5432" # Map host port 5432 to container port 5432
+
+volumes:
+  postgres_data: # Define the named volume for data persistence
+    driver: local

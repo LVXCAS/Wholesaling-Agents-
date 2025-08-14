@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neighborhood Explorer - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/neighborhood-explorer.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="deal-finder">
+                    <i class="fas fa-search"></i>
+                    Deal Finder
+                </button>
+                <button class="nav-item" data-tab="lead-management">
+                    <i class="fas fa-users"></i>
+                    Lead Management
+                </button>
+                <button class="nav-item active" data-tab="neighborhood-explorer">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Neighborhood Explorer
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="neighborhood-explorer-container" class="neighborhood-explorer-container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1><i class="fas fa-map-marked-alt"></i> Neighborhood Explorer</h1>
+                    <p>Explore neighborhoods with market trends, schools, amenities, and crime data</p>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="explorer-controls">
+                    <div class="controls-row">
+                        <div class="search-container">
+                            <div class="search-input-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="neighborhood-search" placeholder="Search neighborhoods..." autocomplete="off">
+                            </div>
+                        </div>
+                        
+                        <div class="layer-controls">
+                            <label class="layer-toggle-label">
+                                <input type="checkbox" class="layer-toggle" data-layer="neighborhoods" checked>
+                                <span>Neighborhoods</span>
+                            </label>
+                            <label class="layer-toggle-label">
+                                <input type="checkbox" class="layer-toggle" data-layer="schools">
+                                <span>Schools</span>
+                            </label>
+                            <label class="layer-toggle-label">
+                                <input type="checkbox" class="layer-toggle" data-layer="amenities">
+                                <span>Amenities</span>
+                            </label>
+                            <label class="layer-toggle-label">
+                                <input type="checkbox" class="layer-toggle" data-layer="crime">
+                                <span>Crime</span>
+                            </label>
+                            <label class="layer-toggle-label">
+                                <input type="checkbox" class="layer-toggle" data-layer="properties">
+                                <span>Properties</span>
+                            </label>
+                        </div>
+                        
+                        <div class="view-controls">
+                            <button id="reset-view-btn" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Reset View
+                            </button>
+                            <button id="export-data-btn" class="btn btn-secondary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="controls-row">
+                        <div class="filters-container">
+                            <select id="price-range-filter">
+                                <option value="">All Price Ranges</option>
+                                <option value="0-300000">Under $300K</option>
+                                <option value="300000-500000">$300K - $500K</option>
+                                <option value="500000-750000">$500K - $750K</option>
+                                <option value="750000-1000000">$750K - $1M</option>
+                                <option value="1000000+">Over $1M</option>
+                            </select>
+                            
+                            <select id="trend-filter">
+                                <option value="">All Trends</option>
+                                <option value="rising">Rising</option>
+                                <option value="stable">Stable</option>
+                                <option value="declining">Declining</option>
+                            </select>
+                            
+                            <select id="trend-period">
+                                <option value="1year">1 Year</option>
+                                <option value="2year">2 Years</option>
+                                <option value="5year">5 Years</option>
+                            </select>
+                        </div>
+                        
+                        <div id="explorer-stats" class="explorer-stats">
+                            <!-- Stats will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Layout -->
+                <div class="explorer-layout">
+                    <!-- Sidebar -->
+                    <div class="explorer-sidebar">
+                        <div class="sidebar-section">
+                            <h3>Neighborhoods</h3>
+                            <div id="neighborhood-list" class="neighborhood-list">
+                                <!-- Neighborhood list will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-section">
+                            <div id="visible-neighborhoods-count" class="visible-count">
+                                Loading neighborhoods...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Container -->
+                    <div class="map-container">
+                        <div id="neighborhood-map" class="neighborhood-map">
+                            <!-- Map will be initialized by JavaScript -->
+                        </div>
+                        
+                        <!-- Map Legend -->
+                        <div class="map-legend">
+                            <h4>Legend</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #10b981;"></div>
+                                    <span>High Growth (10%+)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #f59e0b;"></div>
+                                    <span>Moderate Growth (5-10%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #6b7280;"></div>
+                                    <span>Stable (0-5%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #ef4444;"></div>
+                                    <span>Declining (<0%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Panel -->
+                    <div id="neighborhood-details" class="details-panel hidden">
+                        <div class="panel-header">
+                            <h3>Neighborhood Details</h3>
+                            <button class="panel-close" onclick="neighborhoodExplorer.resetMapView()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div id="neighborhood-details-content" class="panel-content">
+                            <!-- Details will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/neighborhood-explorer.js"></script>
+</body>
+</html>

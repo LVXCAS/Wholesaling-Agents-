@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication Center - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/communication-center.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item" data-tab="property-input">
+                    <i class="fas fa-plus"></i>
+                    Add Property
+                </button>
+                <button class="nav-item" data-tab="deal-finder">
+                    <i class="fas fa-search"></i>
+                    Deal Finder
+                </button>
+                <button class="nav-item active" data-tab="communication-center">
+                    <i class="fas fa-comments"></i>
+                    Communication
+                </button>
+                <button class="nav-item" data-tab="portfolio">
+                    <i class="fas fa-chart-line"></i>
+                    Portfolio
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="communication-center">
+                <!-- Header -->
+                <div class="page-header">
+                    <h1><i class="fas fa-comments"></i> Communication Center</h1>
+                    <p>Manage all your property owner communications in one place</p>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="refresh-inbox">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-primary" id="compose-message">
+                            <i class="fas fa-plus"></i> New Message
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Communication Layout -->
+                <div class="communication-layout">
+                    <!-- Sidebar -->
+                    <div class="communication-sidebar">
+                        <!-- Inbox Navigation -->
+                        <div class="inbox-nav">
+                            <div class="nav-section">
+                                <h3>Inbox</h3>
+                                <ul class="nav-list">
+                                    <li class="nav-item active" data-filter="all">
+                                        <i class="fas fa-inbox"></i>
+                                        <span>All Messages</span>
+                                        <span class="count" id="all-count">0</span>
+                                    </li>
+                                    <li class="nav-item" data-filter="unread">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Unread</span>
+                                        <span class="count" id="unread-count">0</span>
+                                    </li>
+                                    <li class="nav-item" data-filter="replied">
+                                        <i class="fas fa-reply"></i>
+                                        <span>Replied</span>
+                                        <span class="count" id="replied-count">0</span>
+                                    </li>
+                                    <li class="nav-item" data-filter="scheduled">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Scheduled</span>
+                                        <span class="count" id="scheduled-count">0</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="nav-section">
+                                <h3>Channels</h3>
+                                <ul class="nav-list">
+                                    <li class="nav-item" data-channel="email">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Email</span>
+                                        <span class="count" id="email-count">0</span>
+                                    </li>
+                                    <li class="nav-item" data-channel="sms">
+                                        <i class="fas fa-sms"></i>
+                                        <span>SMS</span>
+                                        <span class="count" id="sms-count">0</span>
+                                    </li>
+                                    <li class="nav-item" data-channel="voice">
+                                        <i class="fas fa-phone"></i>
+                                        <span>Voice</span>
+                                        <span class="count" id="voice-count">0</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="nav-section">
+                                <h3>Templates</h3>
+                                <ul class="nav-list">
+                                    <li class="nav-item" id="manage-templates">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span>Manage Templates</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="quick-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="response-rate">0%</div>
+                                <div class="stat-label">Response Rate</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="avg-response-time">0h</div>
+                                <div class="stat-label">Avg Response Time</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content Area -->
+                    <div class="communication-main">
+                        <!-- Conversation List -->
+                        <div class="conversation-list" id="conversation-list">
+                            <div class="list-header">
+                                <div class="search-bar">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search conversations..." id="conversation-search">
+                                </div>
+                                <div class="list-filters">
+                                    <select id="sort-filter">
+                                        <option value="recent">Most Recent</option>
+                                        <option value="unread">Unread First</option>
+                                        <option value="priority">High Priority</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="conversation-items" id="conversation-items">
+                                <!-- Conversation items will be loaded here -->
+                                <div class="empty-state">
+                                    <i class="fas fa-comments"></i>
+                                    <h3>No conversations yet</h3>
+                                    <p>Start a new conversation to see it here</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Conversation View -->
+                        <div class="conversation-view" id="conversation-view" style="display: none;">
+                            <div class="conversation-header">
+                                <div class="contact-info">
+                                    <div class="contact-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="contact-details">
+                                        <h3 id="contact-name">Contact Name</h3>
+                                        <p id="contact-info">contact@example.com • (555) 123-4567</p>
+                                        <div class="contact-tags" id="contact-tags">
+                                            <!-- Tags will be added here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="conversation-actions">
+                                    <button class="btn btn-secondary" id="mark-important">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" id="schedule-followup">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" id="conversation-settings">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="messages-container" id="messages-container">
+                                <!-- Messages will be loaded here -->
+                            </div>
+
+                            <div class="message-composer">
+                                <div class="composer-header">
+                                    <div class="channel-selector">
+                                        <button class="channel-btn active" data-channel="email">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        <button class="channel-btn" data-channel="sms">
+                                            <i class="fas fa-sms"></i>
+                                        </button>
+                                        <button class="channel-btn" data-channel="voice">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </div>
+                                    <div class="composer-actions">
+                                        <button class="btn btn-secondary btn-sm" id="use-template">
+                                            <i class="fas fa-file-alt"></i> Template
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" id="schedule-send">
+                                            <i class="fas fa-clock"></i> Schedule
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="composer-body">
+                                    <div class="email-composer" id="email-composer">
+                                        <div class="form-group">
+                                            <input type="text" id="email-subject" placeholder="Subject" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <textarea id="email-message" placeholder="Type your message..." class="form-control" rows="4"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="sms-composer" id="sms-composer" style="display: none;">
+                                        <div class="form-group">
+                                            <textarea id="sms-message" placeholder="Type your SMS message..." class="form-control" rows="3" maxlength="160"></textarea>
+                                            <div class="character-count">
+                                                <span id="sms-char-count">0</span>/160
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="voice-composer" id="voice-composer" style="display: none;">
+                                        <div class="form-group">
+                                            <textarea id="voice-script" placeholder="Voice call script..." class="form-control" rows="4"></textarea>
+                                        </div>
+                                        <div class="voice-options">
+                                            <label>
+                                                <input type="checkbox" id="leave-voicemail"> Leave voicemail if no answer
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="composer-footer">
+                                    <div class="composer-tools">
+                                        <button class="tool-btn" id="attach-file">
+                                            <i class="fas fa-paperclip"></i>
+                                        </button>
+                                        <button class="tool-btn" id="add-emoji">
+                                            <i class="fas fa-smile"></i>
+                                        </button>
+                                        <button class="tool-btn" id="ai-assist">
+                                            <i class="fas fa-magic"></i> AI Assist
+                                        </button>
+                                    </div>
+                                    <div class="send-actions">
+                                        <button class="btn btn-secondary" id="save-draft">
+                                            <i class="fas fa-save"></i> Save Draft
+                                        </button>
+                                        <button class="btn btn-primary" id="send-message">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Template Management Modal -->
+    <div class="modal-overlay" id="template-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-file-alt"></i>
+                    Message Templates
+                </h2>
+                <button class="modal-close" id="close-template-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="template-manager">
+                    <div class="template-tabs">
+                        <button class="tab-btn active" data-template-type="email">Email Templates</button>
+                        <button class="tab-btn" data-template-type="sms">SMS Templates</button>
+                        <button class="tab-btn" data-template-type="voice">Voice Scripts</button>
+                    </div>
+
+                    <div class="template-content">
+                        <div class="template-list" id="template-list">
+                            <!-- Templates will be loaded here -->
+                        </div>
+                        
+                        <div class="template-editor" id="template-editor" style="display: none;">
+                            <div class="form-group">
+                                <label for="template-name">Template Name</label>
+                                <input type="text" id="template-name" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="template-category">Category</label>
+                                <select id="template-category" class="form-control">
+                                    <option value="initial_contact">Initial Contact</option>
+                                    <option value="follow_up">Follow Up</option>
+                                    <option value="negotiation">Negotiation</option>
+                                    <option value="closing">Closing</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="email-template-fields">
+                                <label for="template-subject">Subject</label>
+                                <input type="text" id="template-subject" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="template-content">Content</label>
+                                <textarea id="template-content" class="form-control" rows="6"></textarea>
+                            </div>
+                            <div class="template-variables">
+                                <h4>Available Variables</h4>
+                                <div class="variable-tags">
+                                    <span class="variable-tag" data-variable="{{contact_name}}">{{contact_name}}</span>
+                                    <span class="variable-tag" data-variable="{{property_address}}">{{property_address}}</span>
+                                    <span class="variable-tag" data-variable="{{offer_amount}}">{{offer_amount}}</span>
+                                    <span class="variable-tag" data-variable="{{agent_name}}">{{agent_name}}</span>
+                                </div>
+                            </div>
+                            <div class="template-actions">
+                                <button class="btn btn-secondary" id="cancel-template">Cancel</button>
+                                <button class="btn btn-primary" id="save-template">Save Template</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/communication-center.js"></script>
+</body>
+</html>

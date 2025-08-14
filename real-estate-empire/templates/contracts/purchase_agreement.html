@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real Estate Purchase Agreement</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin-bottom: 20px; }
+        .signature-section { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px; }
+        .signature-line { border-bottom: 1px solid #000; width: 300px; display: inline-block; margin: 10px; }
+        .terms { margin: 10px 0; }
+        .bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>REAL ESTATE PURCHASE AGREEMENT</h1>
+        <p>Contract ID: {{ contract_id }}</p>
+        <p>Date: {{ generated_date }}</p>
+    </div>
+
+    <div class="section">
+        <h2>PROPERTY INFORMATION</h2>
+        <p><span class="bold">Property Address:</span> {{ deal.property.address }}, {{ deal.property.city }}, {{ deal.property.state }} {{ deal.property.zip_code }}</p>
+        <p><span class="bold">Legal Description:</span> {{ deal.property.legal_description or 'To be provided by title company' }}</p>
+        <p><span class="bold">Property Type:</span> {{ deal.property.property_type }}</p>
+        {% if deal.property.square_feet %}
+        <p><span class="bold">Square Footage:</span> {{ deal.property.square_feet }} sq ft</p>
+        {% endif %}
+        {% if deal.property.lot_size %}
+        <p><span class="bold">Lot Size:</span> {{ deal.property.lot_size }} acres</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>PARTIES</h2>
+        {% for party in parties %}
+        <div class="terms">
+            <p><span class="bold">{{ party.role }}:</span></p>
+            <p>Name: {{ party.name }}</p>
+            <p>Address: {{ party.address }}</p>
+            {% if party.phone %}
+            <p>Phone: {{ party.phone }}</p>
+            {% endif %}
+            {% if party.email %}
+            <p>Email: {{ party.email }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>PURCHASE TERMS</h2>
+        <p><span class="bold">Purchase Price:</span> ${{ (terms.purchase_price or 0) | round(2) | string | replace('.0', '') }}</p>
+        <p><span class="bold">Earnest Money:</span> ${{ (terms.earnest_money or 0) | round(2) | string | replace('.0', '') }}</p>
+        <p><span class="bold">Down Payment:</span> ${{ (terms.down_payment or 0) | round(2) | string | replace('.0', '') }}</p>
+        <p><span class="bold">Financing Amount:</span> ${{ (terms.financing_amount or 0) | round(2) | string | replace('.0', '') }}</p>
+        <p><span class="bold">Closing Date:</span> {{ terms.closing_date }}</p>
+        {% if terms.possession_date %}
+        <p><span class="bold">Possession Date:</span> {{ terms.possession_date }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>CONTINGENCIES</h2>
+        {% if terms.contingencies %}
+        <ul>
+        {% for contingency in terms.contingencies %}
+            <li>{{ contingency }}</li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>This offer is not contingent upon any conditions.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>INCLUSIONS AND EXCLUSIONS</h2>
+        {% if terms.inclusions %}
+        <p><span class="bold">Included in Sale:</span></p>
+        <ul>
+        {% for inclusion in terms.inclusions %}
+            <li>{{ inclusion }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if terms.exclusions %}
+        <p><span class="bold">Excluded from Sale:</span></p>
+        <ul>
+        {% for exclusion in terms.exclusions %}
+            <li>{{ exclusion }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>ADDITIONAL TERMS</h2>
+        {% if terms.additional_terms %}
+        {% for term in terms.additional_terms %}
+        <p>{{ loop.index }}. {{ term }}</p>
+        {% endfor %}
+        {% else %}
+        <p>No additional terms.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>DISCLOSURES</h2>
+        <p>Seller acknowledges the duty to disclose all known material defects and conditions affecting the property.</p>
+        <p>Buyer acknowledges receipt of all required disclosures as mandated by state and local law.</p>
+    </div>
+
+    <div class="signature-section">
+        <h2>SIGNATURES</h2>
+        
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">BUYER:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">SELLER:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+        </div>
+
+        {% if terms.requires_agent_signatures %}
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">BUYER'S AGENT:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+            <p>License #: <span class="signature-line"></span></p>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+            <p><span class="bold">SELLER'S AGENT:</span></p>
+            <p>Signature: <span class="signature-line"></span> Date: <span class="signature-line"></span></p>
+            <p>Print Name: <span class="signature-line"></span></p>
+            <p>License #: <span class="signature-line"></span></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="section" style="margin-top: 40px; font-size: 12px; color: #666;">
+        <p><em>This document was generated automatically on {{ generated_date }}. This is a template and should be reviewed by qualified legal counsel before use. Laws vary by jurisdiction and this document may not be suitable for all transactions.</em></p>
+    </div>
+</body>
+</html>

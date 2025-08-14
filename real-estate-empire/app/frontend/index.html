@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Empire - Property Analysis</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/forms.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-building"></i>
+                <span>Real Estate Empire</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-tab="property-input">
+                    <i class="fas fa-plus"></i>
+                    Add Property
+                </button>
+                <button class="nav-item" data-tab="financial-dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    Financial Analysis
+                </button>
+                <button class="nav-item" data-tab="comparables-viewer">
+                    <i class="fas fa-map"></i>
+                    Comparables
+                </button>
+                <button class="nav-item" data-tab="strategy-comparison">
+                    <i class="fas fa-balance-scale"></i>
+                    Strategy Comparison
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Property Input Forms Tab -->
+            <div id="property-input" class="tab-content active">
+                <div class="page-header">
+                    <h1><i class="fas fa-plus-circle"></i> Add New Property</h1>
+                    <p>Enter property details to begin analysis</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="property-form" class="property-form">
+                        <!-- Address Lookup Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-map-marker-alt"></i> Property Address</h2>
+                            <div class="address-lookup">
+                                <div class="form-group">
+                                    <label for="address-search">Search Address</label>
+                                    <div class="address-input-group">
+                                        <input type="text" id="address-search" placeholder="Enter property address..." autocomplete="off">
+                                        <button type="button" id="address-lookup-btn" class="btn btn-secondary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <div id="address-suggestions" class="address-suggestions"></div>
+                                </div>
+                            </div>
+
+                            <div class="address-details">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="address">Street Address *</label>
+                                        <input type="text" id="address" name="address" required>
+                                        <div class="field-error" id="address-error"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="city">City *</label>
+                                        <input type="text" id="city" name="city" required>
+                                        <div class="field-error" id="city-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="state">State *</label>
+                                        <select id="state" name="state" required>
+                                            <option value="">Select State</option>
+                                            <option value="AL">Alabama</option>
+                                            <option value="AK">Alaska</option>
+                                            <option value="AZ">Arizona</option>
+                                            <option value="AR">Arkansas</option>
+                                            <option value="CA">California</option>
+                                            <option value="CO">Colorado</option>
+                                            <option value="CT">Connecticut</option>
+                                            <option value="DE">Delaware</option>
+                                            <option value="FL">Florida</option>
+                                            <option value="GA">Georgia</option>
+                                            <option value="HI">Hawaii</option>
+                                            <option value="ID">Idaho</option>
+                                            <option value="IL">Illinois</option>
+                                            <option value="IN">Indiana</option>
+                                            <option value="IA">Iowa</option>
+                                            <option value="KS">Kansas</option>
+                                            <option value="KY">Kentucky</option>
+                                            <option value="LA">Louisiana</option>
+                                            <option value="ME">Maine</option>
+                                            <option value="MD">Maryland</option>
+                                            <option value="MA">Massachusetts</option>
+                                            <option value="MI">Michigan</option>
+                                            <option value="MN">Minnesota</option>
+                                            <option value="MS">Mississippi</option>
+                                            <option value="MO">Missouri</option>
+                                            <option value="MT">Montana</option>
+                                            <option value="NE">Nebraska</option>
+                                            <option value="NV">Nevada</option>
+                                            <option value="NH">New Hampshire</option>
+                                            <option value="NJ">New Jersey</option>
+                                            <option value="NM">New Mexico</option>
+                                            <option value="NY">New York</option>
+                                            <option value="NC">North Carolina</option>
+                                            <option value="ND">North Dakota</option>
+                                            <option value="OH">Ohio</option>
+                                            <option value="OK">Oklahoma</option>
+                                            <option value="OR">Oregon</option>
+                                            <option value="PA">Pennsylvania</option>
+                                            <option value="RI">Rhode Island</option>
+                                            <option value="SC">South Carolina</option>
+                                            <option value="SD">South Dakota</option>
+                                            <option value="TN">Tennessee</option>
+                                            <option value="TX">Texas</option>
+                                            <option value="UT">Utah</option>
+                                            <option value="VT">Vermont</option>
+                                            <option value="VA">Virginia</option>
+                                            <option value="WA">Washington</option>
+                                            <option value="WV">West Virginia</option>
+                                            <option value="WI">Wisconsin</option>
+                                            <option value="WY">Wyoming</option>
+                                        </select>
+                                        <div class="field-error" id="state-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="zip_code">ZIP Code *</label>
+                                        <input type="text" id="zip_code" name="zip_code" pattern="[0-9]{5}(-[0-9]{4})?" required>
+                                        <div class="field-error" id="zip_code-error"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="county">County</label>
+                                        <input type="text" id="county" name="county">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="neighborhood">Neighborhood</label>
+                                        <input type="text" id="neighborhood" name="neighborhood">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Property Details Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-home"></i> Property Details</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="property_type">Property Type *</label>
+                                    <select id="property_type" name="property_type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="single_family">Single Family</option>
+                                        <option value="multi_family">Multi Family</option>
+                                        <option value="condo">Condo</option>
+                                        <option value="townhouse">Townhouse</option>
+                                        <option value="apartment">Apartment</option>
+                                        <option value="commercial">Commercial</option>
+                                        <option value="land">Land</option>
+                                        <option value="mobile_home">Mobile Home</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <div class="field-error" id="property_type-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="year_built">Year Built</label>
+                                    <input type="number" id="year_built" name="year_built" min="1800" max="2024">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bedrooms">Bedrooms</label>
+                                    <input type="number" id="bedrooms" name="bedrooms" min="0" max="20">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bathrooms">Bathrooms</label>
+                                    <input type="number" id="bathrooms" name="bathrooms" min="0" max="20" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="square_feet">Square Feet</label>
+                                    <input type="number" id="square_feet" name="square_feet" min="0">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lot_size">Lot Size (acres)</label>
+                                    <input type="number" id="lot_size" name="lot_size" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="stories">Stories</label>
+                                    <input type="number" id="stories" name="stories" min="1" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label for="garage_spaces">Garage Spaces</label>
+                                    <input type="number" id="garage_spaces" name="garage_spaces" min="0" max="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Information Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-dollar-sign"></i> Financial Information</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="listing_price">Listing Price</label>
+                                    <input type="number" id="listing_price" name="listing_price" min="0" step="1000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="current_value">Current Value</label>
+                                    <input type="number" id="current_value" name="current_value" min="0" step="1000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="assessed_value">Assessed Value</label>
+                                    <input type="number" id="assessed_value" name="assessed_value" min="0" step="1000">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tax_amount">Annual Property Tax</label>
+                                    <input type="number" id="tax_amount" name="tax_amount" min="0" step="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_sale_price">Last Sale Price</label>
+                                    <input type="number" id="last_sale_price" name="last_sale_price" min="0" step="1000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_sale_date">Last Sale Date</label>
+                                    <input type="date" id="last_sale_date" name="last_sale_date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Property Condition Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-tools"></i> Property Condition</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="condition_score">Condition Score (0-1)</label>
+                                    <input type="range" id="condition_score" name="condition_score" min="0" max="1" step="0.1" value="0.7">
+                                    <div class="range-labels">
+                                        <span>Poor (0)</span>
+                                        <span id="condition-value">0.7</span>
+                                        <span>Excellent (1)</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="renovation_needed">
+                                        <input type="checkbox" id="renovation_needed" name="renovation_needed">
+                                        Renovation Needed
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="description">Property Description</label>
+                                    <textarea id="description" name="description" rows="4" placeholder="Describe the property condition, features, and any notable characteristics..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-camera"></i> Property Photos</h2>
+                            <div class="photo-upload-area">
+                                <div class="upload-zone" id="photo-upload-zone">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag and drop photos here or click to browse</p>
+                                    <input type="file" id="photo-input" multiple accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('photo-input').click()">
+                                        <i class="fas fa-plus"></i> Add Photos
+                                    </button>
+                                </div>
+                                <div class="photo-preview" id="photo-preview"></div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information Section -->
+                        <div class="form-section">
+                            <h2><i class="fas fa-info-circle"></i> Additional Information</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="status">Property Status</label>
+                                    <select id="status" name="status">
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="sold">Sold</option>
+                                        <option value="off_market">Off Market</option>
+                                        <option value="foreclosure">Foreclosure</option>
+                                        <option value="pre_foreclosure">Pre-Foreclosure</option>
+                                        <option value="auction">Auction</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="days_on_market">Days on Market</label>
+                                    <input type="number" id="days_on_market" name="days_on_market" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="school_district">School District</label>
+                                    <input type="text" id="school_district" name="school_district">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="clear-form">
+                                <i class="fas fa-times"></i> Clear Form
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="submit-property">
+                                <i class="fas fa-save"></i> Save Property
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Financial Analysis Dashboard Tab -->
+            <div id="financial-dashboard" class="tab-content">
+                <div class="page-header">
+                    <h1><i class="fas fa-chart-line"></i> Financial Analysis Dashboard</h1>
+                    <p>Comprehensive financial analysis and investment metrics</p>
+                </div>
+
+                <!-- Property Selection -->
+                <div class="dashboard-controls">
+                    <div class="control-group">
+                        <label for="property-select">Select Property:</label>
+                        <select id="property-select">
+                            <option value="">Choose a property to analyze...</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="analysis-type">Analysis Type:</label>
+                        <select id="analysis-type">
+                            <option value="comprehensive">Comprehensive</option>
+                            <option value="valuation">Valuation Only</option>
+                            <option value="financial">Financial Only</option>
+                        </select>
+                    </div>
+                    <button id="analyze-btn" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Analyze Property
+                    </button>
+                </div>
+
+                <!-- Analysis Results -->
+                <div id="analysis-results" class="dashboard-container" style="display: none;">
+                    <!-- Key Metrics Overview -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="arv-value">$0</div>
+                            <div class="metric-label">After Repair Value (ARV)</div>
+                            <div class="confidence-indicator">
+                                <div class="confidence-dots" id="arv-confidence"></div>
+                                <span class="confidence-label" id="arv-confidence-label">Confidence</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="repair-cost-value">$0</div>
+                            <div class="metric-label">Estimated Repair Cost</div>
+                            <div class="confidence-indicator">
+                                <div class="confidence-dots" id="repair-confidence"></div>
+                                <span class="confidence-label" id="repair-confidence-label">Confidence</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="potential-profit-value">$0</div>
+                            <div class="metric-label">Potential Profit</div>
+                            <div class="metric-change" id="profit-change">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>ROI: 0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="cash-flow-value">$0</div>
+                            <div class="metric-label">Monthly Cash Flow</div>
+                            <div class="metric-change" id="cashflow-change">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Cap Rate: 0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Analysis Charts -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-chart-pie"></i>
+                                    Investment Breakdown
+                                </div>
+                                <button class="dashboard-card-action" onclick="refreshChart('investment-breakdown')">
+                                    <i class="fas fa-refresh"></i>
+                                </button>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div class="chart-container">
+                                    <canvas id="investment-breakdown-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Cash Flow Projection
+                                </div>
+                                <button class="dashboard-card-action" onclick="refreshChart('cash-flow')">
+                                    <i class="fas fa-refresh"></i>
+                                </button>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div class="chart-container">
+                                    <canvas id="cash-flow-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Calculators -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-calculator"></i>
+                                Interactive Financial Calculator
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="calculator-container">
+                                <div class="calculator-inputs">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="calc-purchase-price">Purchase Price</label>
+                                            <input type="number" id="calc-purchase-price" class="calculator-input" placeholder="Enter purchase price">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-down-payment">Down Payment %</label>
+                                            <input type="number" id="calc-down-payment" class="calculator-input" value="20" min="0" max="100">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-interest-rate">Interest Rate %</label>
+                                            <input type="number" id="calc-interest-rate" class="calculator-input" value="7.5" step="0.1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-loan-term">Loan Term (years)</label>
+                                            <input type="number" id="calc-loan-term" class="calculator-input" value="30">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="calc-monthly-rent">Monthly Rent</label>
+                                            <input type="number" id="calc-monthly-rent" class="calculator-input" placeholder="Expected monthly rent">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-monthly-expenses">Monthly Expenses</label>
+                                            <input type="number" id="calc-monthly-expenses" class="calculator-input" placeholder="Property taxes, insurance, etc.">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-vacancy-rate">Vacancy Rate %</label>
+                                            <input type="number" id="calc-vacancy-rate" class="calculator-input" value="5" min="0" max="50">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="calc-maintenance-rate">Maintenance %</label>
+                                            <input type="number" id="calc-maintenance-rate" class="calculator-input" value="10" min="0" max="50">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="calculator-results">
+                                    <div class="analysis-summary">
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-monthly-payment">$0</div>
+                                            <div class="analysis-metric-label">Monthly Payment</div>
+                                        </div>
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-net-cash-flow">$0</div>
+                                            <div class="analysis-metric-label">Net Cash Flow</div>
+                                        </div>
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-cap-rate">0%</div>
+                                            <div class="analysis-metric-label">Cap Rate</div>
+                                        </div>
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-coc-return">0%</div>
+                                            <div class="analysis-metric-label">Cash-on-Cash Return</div>
+                                        </div>
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-total-roi">0%</div>
+                                            <div class="analysis-metric-label">Total ROI</div>
+                                        </div>
+                                        <div class="analysis-metric">
+                                            <div class="analysis-metric-value" id="calc-break-even">$0</div>
+                                            <div class="analysis-metric-label">Break-even Rent</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sensitivity Analysis -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-sliders-h"></i>
+                                Sensitivity Analysis
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="sensitivity-container">
+                                <div class="sensitivity-controls">
+                                    <div class="form-group">
+                                        <label for="sensitivity-variable">Variable to Analyze:</label>
+                                        <select id="sensitivity-variable">
+                                            <option value="purchase_price">Purchase Price</option>
+                                            <option value="rent">Monthly Rent</option>
+                                            <option value="interest_rate">Interest Rate</option>
+                                            <option value="vacancy_rate">Vacancy Rate</option>
+                                            <option value="repair_cost">Repair Cost</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sensitivity-range">Range (±%):</label>
+                                        <input type="number" id="sensitivity-range" value="20" min="5" max="50">
+                                    </div>
+                                    <button id="run-sensitivity" class="btn btn-secondary">
+                                        <i class="fas fa-play"></i> Run Analysis
+                                    </button>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="sensitivity-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financing Scenarios -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-university"></i>
+                                Financing Scenario Comparison
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="scenarios-container">
+                                <div class="scenarios-grid">
+                                    <div class="scenario-card" id="scenario-conventional">
+                                        <h4>Conventional Loan</h4>
+                                        <div class="scenario-details">
+                                            <div class="scenario-param">
+                                                <label>Down Payment:</label>
+                                                <input type="number" value="20" min="0" max="100">%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Interest Rate:</label>
+                                                <input type="number" value="7.5" step="0.1">%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Term:</label>
+                                                <input type="number" value="30"> years
+                                            </div>
+                                        </div>
+                                        <div class="scenario-results">
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Monthly Payment:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Required:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Flow:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="scenario-card" id="scenario-fha">
+                                        <h4>FHA Loan</h4>
+                                        <div class="scenario-details">
+                                            <div class="scenario-param">
+                                                <label>Down Payment:</label>
+                                                <input type="number" value="3.5" min="0" max="100">%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Interest Rate:</label>
+                                                <input type="number" value="7.0" step="0.1">%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Term:</label>
+                                                <input type="number" value="30"> years
+                                            </div>
+                                        </div>
+                                        <div class="scenario-results">
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Monthly Payment:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Required:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Flow:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="scenario-card" id="scenario-cash">
+                                        <h4>Cash Purchase</h4>
+                                        <div class="scenario-details">
+                                            <div class="scenario-param">
+                                                <label>Down Payment:</label>
+                                                <input type="number" value="100" readonly>%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Interest Rate:</label>
+                                                <input type="number" value="0" readonly>%
+                                            </div>
+                                            <div class="scenario-param">
+                                                <label>Term:</label>
+                                                <input type="number" value="0" readonly> years
+                                            </div>
+                                        </div>
+                                        <div class="scenario-results">
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Monthly Payment:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Required:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                            <div class="scenario-metric">
+                                                <span class="metric-label">Cash Flow:</span>
+                                                <span class="metric-value">$0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="scenarios-comparison">
+                                    <h4>Scenario Comparison</h4>
+                                    <div class="chart-container">
+                                        <canvas id="scenarios-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="dashboard-empty-state" class="empty-state">
+                    <i class="fas fa-chart-line fa-3x"></i>
+                    <h3>No Property Selected</h3>
+                    <p>Select a property from the dropdown above to view financial analysis</p>
+                    <button class="btn btn-primary" onclick="app.switchTab('property-input')">
+                        <i class="fas fa-plus"></i> Add New Property
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comparables Viewer Tab -->
+            <div id="comparables-viewer" class="tab-content">
+                <div class="page-header">
+                    <h1><i class="fas fa-map"></i> Comparable Properties</h1>
+                    <p>View and analyze comparable properties for accurate valuation</p>
+                </div>
+
+                <!-- Property Selection and Search Controls -->
+                <div class="dashboard-controls">
+                    <div class="control-group">
+                        <label for="comp-property-select">Subject Property:</label>
+                        <select id="comp-property-select">
+                            <option value="">Select property to find comparables...</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="comp-max-distance">Max Distance (miles):</label>
+                        <input type="number" id="comp-max-distance" value="2.0" min="0.5" max="10" step="0.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="comp-max-age">Max Age (days):</label>
+                        <input type="number" id="comp-max-age" value="180" min="30" max="365" step="30">
+                    </div>
+                    <div class="control-group">
+                        <label for="comp-min-count">Min Comparables:</label>
+                        <input type="number" id="comp-min-count" value="3" min="1" max="10">
+                    </div>
+                    <button id="find-comparables-btn" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Find Comparables
+                    </button>
+                </div>
+
+                <!-- Comparables Results -->
+                <div id="comparables-results" class="dashboard-container" style="display: none;">
+                    <!-- Subject Property Summary -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-home"></i>
+                                Subject Property
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div id="subject-property-summary" class="property-summary">
+                                <!-- Subject property details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valuation Summary -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="comp-estimated-value">$0</div>
+                            <div class="metric-label">Estimated Value</div>
+                            <div class="confidence-indicator">
+                                <div class="confidence-dots" id="comp-value-confidence"></div>
+                                <span class="confidence-label" id="comp-value-confidence-label">Confidence</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="comp-count">0</div>
+                            <div class="metric-label">Comparable Properties</div>
+                            <div class="metric-change" id="comp-range">
+                                <span>Range: $0 - $0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="comp-avg-sqft-price">$0</div>
+                            <div class="metric-label">Avg Price per Sq Ft</div>
+                            <div class="metric-change" id="comp-sqft-range">
+                                <span>Range: $0 - $0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card metric-card">
+                            <div class="metric-value" id="comp-avg-days-market">0</div>
+                            <div class="metric-label">Avg Days on Market</div>
+                            <div class="metric-change" id="comp-market-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Market Trend</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map and Table View -->
+                    <div class="dashboard-grid">
+                        <!-- Comparable Properties Map -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    Comparable Properties Map
+                                </div>
+                                <div class="map-controls">
+                                    <button class="dashboard-card-action" onclick="comparablesViewer.centerMap()">
+                                        <i class="fas fa-crosshairs"></i>
+                                    </button>
+                                    <button class="dashboard-card-action" onclick="comparablesViewer.toggleMapType()">
+                                        <i class="fas fa-layer-group"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div id="comparables-map" class="map-container"></div>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-marker subject"></div>
+                                        <span>Subject Property</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker comparable"></div>
+                                        <span>Comparable Property</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker selected"></div>
+                                        <span>Selected Comparable</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comparable Properties Table -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-table"></i>
+                                    Comparable Properties
+                                </div>
+                                <div class="table-controls">
+                                    <button class="dashboard-card-action" onclick="comparablesViewer.sortComparables('price')">
+                                        <i class="fas fa-sort-amount-down"></i>
+                                    </button>
+                                    <button class="dashboard-card-action" onclick="comparablesViewer.exportComparables()">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div class="table-container">
+                                    <table id="comparables-table" class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Address</th>
+                                                <th>Price</th>
+                                                <th>Sq Ft</th>
+                                                <th>$/Sq Ft</th>
+                                                <th>Bed/Bath</th>
+                                                <th>Distance</th>
+                                                <th>Days Ago</th>
+                                                <th>Similarity</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="comparables-table-body">
+                                            <!-- Comparable properties will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adjustment Visualization -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-adjust"></i>
+                                Comparable Property Adjustments
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div id="adjustments-container">
+                                <div class="adjustments-explanation">
+                                    <p>Select a comparable property from the table above to view detailed adjustments</p>
+                                </div>
+                                <div id="adjustments-details" style="display: none;">
+                                    <div class="adjustments-grid">
+                                        <div class="adjustment-category">
+                                            <h4>Property Characteristics</h4>
+                                            <div id="property-adjustments"></div>
+                                        </div>
+                                        <div class="adjustment-category">
+                                            <h4>Location Factors</h4>
+                                            <div id="location-adjustments"></div>
+                                        </div>
+                                        <div class="adjustment-category">
+                                            <h4>Market Conditions</h4>
+                                            <div id="market-adjustments"></div>
+                                        </div>
+                                    </div>
+                                    <div class="adjustment-summary">
+                                        <div class="adjustment-calculation">
+                                            <div class="calc-row">
+                                                <span>Original Sale Price:</span>
+                                                <span id="original-price">$0</span>
+                                            </div>
+                                            <div class="calc-row">
+                                                <span>Total Adjustments:</span>
+                                                <span id="total-adjustments">$0</span>
+                                            </div>
+                                            <div class="calc-row final">
+                                                <span>Adjusted Value:</span>
+                                                <span id="adjusted-value">$0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valuation Confidence Display -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Valuation Confidence Analysis
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="confidence-analysis">
+                                <div class="confidence-factors">
+                                    <div class="confidence-factor">
+                                        <div class="factor-label">Number of Comparables</div>
+                                        <div class="factor-score">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" id="comp-count-score"></div>
+                                            </div>
+                                            <span id="comp-count-score-text">0/10</span>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-factor">
+                                        <div class="factor-label">Similarity Score</div>
+                                        <div class="factor-score">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" id="similarity-score"></div>
+                                            </div>
+                                            <span id="similarity-score-text">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-factor">
+                                        <div class="factor-label">Market Activity</div>
+                                        <div class="factor-score">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" id="market-activity-score"></div>
+                                            </div>
+                                            <span id="market-activity-score-text">Low</span>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-factor">
+                                        <div class="factor-label">Price Consistency</div>
+                                        <div class="factor-score">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" id="price-consistency-score"></div>
+                                            </div>
+                                            <span id="price-consistency-score-text">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="overall-confidence">
+                                    <div class="confidence-circle">
+                                        <div class="confidence-percentage" id="overall-confidence-percentage">0%</div>
+                                        <div class="confidence-label">Overall Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="comparables-empty-state" class="empty-state">
+                    <i class="fas fa-map fa-3x"></i>
+                    <h3>No Property Selected</h3>
+                    <p>Select a property from the dropdown above to find comparable properties</p>
+                    <button class="btn btn-primary" onclick="app.switchTab('property-input')">
+                        <i class="fas fa-plus"></i> Add New Property
+                    </button>
+                </div>
+            </div>
+
+            <!-- Strategy Comparison Tab -->
+            <div id="strategy-comparison" class="tab-content">
+                <div class="page-header">
+                    <h1><i class="fas fa-balance-scale"></i> Investment Strategy Comparison</h1>
+                    <p>Compare different investment strategies and their potential returns</p>
+                </div>
+
+                <!-- Property Selection and Strategy Controls -->
+                <div class="dashboard-controls">
+                    <div class="control-group">
+                        <label for="strategy-property-select">Select Property:</label>
+                        <select id="strategy-property-select">
+                            <option value="">Choose a property to analyze strategies...</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="strategy-timeframe">Analysis Timeframe:</label>
+                        <select id="strategy-timeframe">
+                            <option value="1">1 Year</option>
+                            <option value="5" selected>5 Years</option>
+                            <option value="10">10 Years</option>
+                            <option value="20">20 Years</option>
+                        </select>
+                    </div>
+                    <button id="analyze-strategies-btn" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Analyze Strategies
+                    </button>
+                </div>
+
+                <!-- Strategy Results -->
+                <div id="strategy-results" class="dashboard-container" style="display: none;">
+                    <!-- Strategy Cards Overview -->
+                    <div class="strategies-overview">
+                        <div class="strategy-cards-grid">
+                            <!-- Fix & Flip Strategy -->
+                            <div class="strategy-card" id="flip-strategy-card">
+                                <div class="strategy-header">
+                                    <div class="strategy-icon">
+                                        <i class="fas fa-hammer"></i>
+                                    </div>
+                                    <div class="strategy-title">
+                                        <h3>Fix & Flip</h3>
+                                        <p>Buy, renovate, and sell quickly</p>
+                                    </div>
+                                    <div class="strategy-score" id="flip-score">
+                                        <div class="score-circle">
+                                            <span class="score-value">0</span>
+                                        </div>
+                                        <div class="score-label">Score</div>
+                                    </div>
+                                </div>
+                                <div class="strategy-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Potential Profit:</span>
+                                        <span class="metric-value" id="flip-profit">$0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">ROI:</span>
+                                        <span class="metric-value" id="flip-roi">0%</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Timeline:</span>
+                                        <span class="metric-value" id="flip-timeline">6 months</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Risk Level:</span>
+                                        <span class="metric-value risk-medium" id="flip-risk">Medium</span>
+                                    </div>
+                                </div>
+                                <div class="strategy-actions">
+                                    <button class="btn btn-secondary btn-sm" onclick="strategyComparison.viewStrategyDetails('flip')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Buy & Hold Rental Strategy -->
+                            <div class="strategy-card" id="rental-strategy-card">
+                                <div class="strategy-header">
+                                    <div class="strategy-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="strategy-title">
+                                        <h3>Buy & Hold Rental</h3>
+                                        <p>Generate passive rental income</p>
+                                    </div>
+                                    <div class="strategy-score" id="rental-score">
+                                        <div class="score-circle">
+                                            <span class="score-value">0</span>
+                                        </div>
+                                        <div class="score-label">Score</div>
+                                    </div>
+                                </div>
+                                <div class="strategy-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Monthly Cash Flow:</span>
+                                        <span class="metric-value" id="rental-cashflow">$0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Cap Rate:</span>
+                                        <span class="metric-value" id="rental-caprate">0%</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Cash-on-Cash:</span>
+                                        <span class="metric-value" id="rental-coc">0%</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Risk Level:</span>
+                                        <span class="metric-value risk-low" id="rental-risk">Low</span>
+                                    </div>
+                                </div>
+                                <div class="strategy-actions">
+                                    <button class="btn btn-secondary btn-sm" onclick="strategyComparison.viewStrategyDetails('rental')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Wholesale Strategy -->
+                            <div class="strategy-card" id="wholesale-strategy-card">
+                                <div class="strategy-header">
+                                    <div class="strategy-icon">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <div class="strategy-title">
+                                        <h3>Wholesale</h3>
+                                        <p>Assign contract for quick profit</p>
+                                    </div>
+                                    <div class="strategy-score" id="wholesale-score">
+                                        <div class="score-circle">
+                                            <span class="score-value">0</span>
+                                        </div>
+                                        <div class="score-label">Score</div>
+                                    </div>
+                                </div>
+                                <div class="strategy-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Assignment Fee:</span>
+                                        <span class="metric-value" id="wholesale-fee">$0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">ROI:</span>
+                                        <span class="metric-value" id="wholesale-roi">0%</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Timeline:</span>
+                                        <span class="metric-value" id="wholesale-timeline">30 days</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Risk Level:</span>
+                                        <span class="metric-value risk-low" id="wholesale-risk">Low</span>
+                                    </div>
+                                </div>
+                                <div class="strategy-actions">
+                                    <button class="btn btn-secondary btn-sm" onclick="strategyComparison.viewStrategyDetails('wholesale')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- BRRRR Strategy -->
+                            <div class="strategy-card" id="brrrr-strategy-card">
+                                <div class="strategy-header">
+                                    <div class="strategy-icon">
+                                        <i class="fas fa-recycle"></i>
+                                    </div>
+                                    <div class="strategy-title">
+                                        <h3>BRRRR</h3>
+                                        <p>Buy, Rehab, Rent, Refinance, Repeat</p>
+                                    </div>
+                                    <div class="strategy-score" id="brrrr-score">
+                                        <div class="score-circle">
+                                            <span class="score-value">0</span>
+                                        </div>
+                                        <div class="score-label">Score</div>
+                                    </div>
+                                </div>
+                                <div class="strategy-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Cash Recovered:</span>
+                                        <span class="metric-value" id="brrrr-recovery">$0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Monthly Cash Flow:</span>
+                                        <span class="metric-value" id="brrrr-cashflow">$0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Timeline:</span>
+                                        <span class="metric-value" id="brrrr-timeline">12 months</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Risk Level:</span>
+                                        <span class="metric-value risk-high" id="brrrr-risk">High</span>
+                                    </div>
+                                </div>
+                                <div class="strategy-actions">
+                                    <button class="btn btn-secondary btn-sm" onclick="strategyComparison.viewStrategyDetails('brrrr')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Comparison Table -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-table"></i>
+                                Strategy Comparison Table
+                            </div>
+                            <div class="comparison-controls">
+                                <button class="dashboard-card-action" onclick="strategyComparison.exportComparison()">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="comparison-table-container">
+                                <table class="comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th class="strategy-column flip">Fix & Flip</th>
+                                            <th class="strategy-column rental">Buy & Hold</th>
+                                            <th class="strategy-column wholesale">Wholesale</th>
+                                            <th class="strategy-column brrrr">BRRRR</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparison-table-body">
+                                        <!-- Comparison data will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk-Reward Visualization -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-chart-scatter"></i>
+                                Risk vs Reward Analysis
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div class="risk-reward-container">
+                                <div class="chart-container">
+                                    <canvas id="risk-reward-chart"></canvas>
+                                </div>
+                                <div class="risk-reward-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-marker flip"></div>
+                                        <span>Fix & Flip</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker rental"></div>
+                                        <span>Buy & Hold</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker wholesale"></div>
+                                        <span>Wholesale</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker brrrr"></div>
+                                        <span>BRRRR</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Recommendation -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">
+                                <i class="fas fa-lightbulb"></i>
+                                AI Strategy Recommendation
+                            </div>
+                        </div>
+                        <div class="dashboard-card-content">
+                            <div id="strategy-recommendation" class="recommendation-container">
+                                <!-- AI recommendation will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Strategy Analysis -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Cash Flow Projection
+                                </div>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div class="chart-container">
+                                    <canvas id="strategy-cashflow-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <div class="dashboard-card-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    ROI Comparison
+                                </div>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <div class="chart-container">
+                                    <canvas id="strategy-roi-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="strategy-empty-state" class="empty-state">
+                    <i class="fas fa-balance-scale fa-3x"></i>
+                    <h3>No Property Selected</h3>
+                    <p>Select a property from the dropdown above to compare investment strategies</p>
+                    <button class="btn btn-primary" onclick="app.switchTab('property-input')">
+                        <i class="fas fa-plus"></i> Add New Property
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing...</p>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/property-form.js"></script>
+    <script src="js/financial-dashboard.js"></script>
+    <script src="js/comparables-viewer.js"></script>
+    <script src="js/strategy-comparison.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
