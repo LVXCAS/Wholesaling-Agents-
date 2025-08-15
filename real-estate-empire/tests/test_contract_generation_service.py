@@ -460,3 +460,279 @@ class TestContractGenerationService:
         assert contract.field_values["buyer.name"] == "John Doe"
         assert contract.field_values["property.address"] == "123 Main St"
         assert contract.field_values["terms.price"] == 300000.0
+    
+    def test_advanced_conditional_clauses(self):
+        """Test advanced conditional clause evaluation with operators."""
+        # Create conditional clauses with different operators
+        high_value_clause = self.template_service.create_clause({
+            "name": "High Value Property Clause",
+            "clause_type": ClauseType.CONDITIONAL,
+            "content": "This property is considered high-value and requires additional documentation.",
+            "conditions": {
+                "purchase_price": {"operator": "gt", "value": 500000}
+            },
+            "category": "special_conditions"
+        })
+        
+        financing_clause = self.template_service.create_clause({
+            "name": "Cash Purchase Clause",
+            "clause_type": ClauseType.CONDITIONAL,
+            "content": "This is a cash purchase with no financing contingency.",
+            "conditions": {
+                "financing_required": {"operator": "eq", "value": False}
+            },
+            "category": "financing"
+        })
+        
+        # Create template with conditional clauses
+        template = self.template_service.create_template({
+            "name": "Advanced Conditional Template",
+            "contract_type": ContractType.PURCHASE_AGREEMENT,
+            "description": "Template with advanced conditional logic",
+            "clauses": [high_value_clause.id, financing_clause.id],
+            "required_fields": {
+                "buyer_name": "string",
+                "seller_name": "string",
+                "purchase_price": "float",
+                "financing_required": "boolean"
+            }
+        })
+        
+        parties = [ContractParty(name="Test Buyer", role="buyer")]
+        
+        # Test high-value property (> $500k)
+        high_value_data = {
+            "buyer_name": "Test Buyer",
+            "seller_name": "Test Seller",
+            "purchase_price": 750000.0,
+            "financing_required": False
+        }
+        
+        request = ContractGenerationRequest(
+            template_id=template.id,
+            deal_data=high_value_data,
+            parties=parties
+        )
+        
+        contract = self.generation_service.generate_contract(request)
+        
+        # Both clauses should be included
+        assert high_value_clause.id in contract.included_clauses
+        assert financing_clause.id in contract.included_clauses
+        assert "high-value" in contract.generated_content.lower()
+        assert "cash purchase" in contract.generated_content.lower()
+        
+        # Test lower-value property with financing
+        low_value_data = {
+            "buyer_name": "Test Buyer",
+            "seller_name": "Test Seller", 
+            "purchase_price": 300000.0,
+            "financing_required": True
+        }
+        
+        request2 = ContractGenerationRequest(
+            template_id=template.id,
+            deal_data=low_value_data,
+            parties=parties
+        )
+        
+        contract2 = self.generation_service.generate_contract(request2)
+        
+        # Neither clause should be included
+        assert high_value_clause.id not in contract2.included_clauses
+        assert financing_clause.id not in contract2.included_clauses
+    
+    def test_variable_formatting(self):
+        """Test advanced variable formatting with format specifications."""
+        # Create clause with formatted variables
+        formatted_clause = self.template_service.create_clause({
+            "name": "Formatted Variables Clause",
+            "clause_type": ClauseType.STANDARD,
+            "content": """
+            Purchase Price: ${purchase_price:currency}
+            Interest Rate: ${interest_rate:percent}
+            Closing Date: ${closing_date:date}
+            Property Type: ${property_type:title}
+            Down Payment: ${down_payment_percent:number:1}%
+            """,
+            "category": "pricing"
+        })
+        
+        template = self.template_service.create_template({
+            "name": "Formatting Test Template",
+            "contract_type": ContractType.PURCHASE_AGREEMENT,
+            "description": "Template for testing variable formatting",
+            "clauses": [formatted_clause.id],
+            "required_fields": {
+                "purchase_price": "float",
+                "interest_rate": "float",
+                "closing_date": "date",
+                "property_type": "string",
+                "down_payment_percent": "float"
+            }
+        })
+        
+        deal_data = {
+            "purchase_price": 425000.50,
+            "interest_rate": 6.75,
+            "closing_date": date(2024, 8, 15),
+            "property_type": "single family home",
+            "down_payment_percent": 20.5
+        }
+        
+        parties = [ContractParty(name="Test Buyer", role="buyer")]
+        
+        request = ContractGenerationRequest(
+            template_id=template.id,
+            deal_data=deal_data,
+            parties=parties
+        )
+        
+        contract = self.generation_service.generate_contract(request)
+        
+        # Verify formatting
+        content = contract.generated_content
+        assert "$425,000.50" in content  # Currency formatting
+        assert "6.75%" in content  # Percent formatting
+        assert "August 15, 2024" in content  # Date formatting
+        assert "Single Family Home" in content  # Title case formatting
+        assert "20.5%" in content  # Number formatting with 1 decimal
+    
+    def test_computed_variables(self):
+        """Test computed variable generation."""
+        # Create clause with computed variables
+        computed_clause = self.template_service.create_clause({
+            "name": "Computed Variables Clause",
+            "clause_type": ClauseType.STANDARD,
+            "content": """
+            Purchase Price: ${purchase_price:currency} (${purchase_price_words})
+            Down Payment: ${down_payment_amount:currency}
+            Loan Amount: ${loan_amount:currency}
+            Monthly Payment: ${monthly_payment:currency}
+            """,
+            "category": "financing"
+        })
+        
+        template = self.template_service.create_template({
+            "name": "Computed Variables Template",
+            "contract_type": ContractType.PURCHASE_AGREEMENT,
+            "description": "Template with computed variables",
+            "clauses": [computed_clause.id],
+            "required_fields": {
+                "purchase_price": "float",
+                "down_payment_percent": "float",
+                "interest_rate": "float",
+                "loan_term_years": "int"
+            }
+        })
+        
+        deal_data = {
+            "purchase_price": 300000.0,
+            "down_payment_percent": 20.0,
+            "interest_rate": 6.5,
+            "loan_term_years": 30
+        }
+        
+        parties = [ContractParty(name="Test Buyer", role="buyer")]
+        
+        request = ContractGenerationRequest(
+            template_id=template.id,
+            deal_data=deal_data,
+            parties=parties
+        )
+        
+        contract = self.generation_service.generate_contract(request)
+        
+        content = contract.generated_content
+        
+        # Verify computed values are present
+        assert "Three Hundred Thousand" in content  # purchase_price_words
+        assert "$60,000.00" in content  # down_payment_amount (20% of 300k)
+        assert "$240,000.00" in content  # loan_amount (300k - 60k)
+        # Monthly payment should be computed and formatted
+        assert "$1," in content  # Monthly payment should be over $1000
+    
+    def test_enhanced_contract_validation(self):
+        """Test enhanced contract validation with comprehensive checks."""
+        # Create contract with various validation issues
+        problematic_contract = ContractDocument(
+            template_id=uuid4(),
+            contract_type=ContractType.PURCHASE_AGREEMENT,
+            parties=[
+                ContractParty(
+                    name="", # Missing name
+                    role="buyer", 
+                    email="invalid-email", # Invalid email
+                    signature_required=True
+                ),
+                ContractParty(
+                    name="Seller Name",
+                    role="buyer", # Duplicate role
+                    email="seller@example.com"
+                )
+            ],
+            purchase_price=-1000.0,  # Negative price
+            earnest_money=2000000.0,  # Earnest money > purchase price
+            closing_date=date(2020, 1, 1),  # Past date
+            inspection_period=-5,  # Negative inspection period
+            field_values={
+                "interest_rate": -2.5,  # Negative interest rate
+                "down_payment_percent": 150  # Invalid percentage
+            },
+            generated_content="Contract with [MISSING_FIELD] and invalid data."
+        )
+        
+        result = self.generation_service.validate_contract(problematic_contract)
+        
+        # Should have multiple errors
+        assert result.is_valid is False
+        assert len(result.errors) > 0
+        assert len(result.warnings) > 0
+        assert "MISSING_FIELD" in result.missing_fields
+        
+        # Check for specific validation errors
+        error_text = " ".join(result.errors)
+        assert "missing a name" in error_text.lower()
+        assert "purchase price must be greater than zero" in error_text.lower()
+        assert "earnest money cannot exceed purchase price" in error_text.lower()
+        assert "inspection period cannot be negative" in error_text.lower()
+        assert "interest rate cannot be negative" in error_text.lower()
+        assert "down payment percentage must be between 0 and 100" in error_text.lower()
+        assert "invalid email format" in error_text.lower()
+    
+    def test_contract_type_specific_validation(self):
+        """Test contract type specific validation rules."""
+        # Test purchase agreement validation
+        purchase_contract = ContractDocument(
+            template_id=uuid4(),
+            contract_type=ContractType.PURCHASE_AGREEMENT,
+            parties=[
+                ContractParty(name="Agent Only", role="agent", email="agent@example.com")
+            ],
+            # Missing purchase_price and property_address
+            generated_content="Purchase agreement without required fields"
+        )
+        
+        result = self.generation_service.validate_contract(purchase_contract)
+        
+        error_warnings_text = " ".join(result.errors + result.warnings)
+        assert "purchase price" in error_warnings_text.lower()
+        assert "property address" in error_warnings_text.lower()
+        assert "buyer" in error_warnings_text.lower()
+        assert "seller" in error_warnings_text.lower()
+        
+        # Test lease agreement validation
+        lease_contract = ContractDocument(
+            template_id=uuid4(),
+            contract_type=ContractType.LEASE_AGREEMENT,
+            parties=[
+                ContractParty(name="Property Manager", role="manager", email="manager@example.com")
+            ],
+            generated_content="Lease agreement without tenant or landlord"
+        )
+        
+        lease_result = self.generation_service.validate_contract(lease_contract)
+        
+        lease_warnings_text = " ".join(lease_result.warnings)
+        assert "tenant" in lease_warnings_text.lower() or "lessee" in lease_warnings_text.lower()
+        assert "landlord" in lease_warnings_text.lower() or "lessor" in lease_warnings_text.lower()

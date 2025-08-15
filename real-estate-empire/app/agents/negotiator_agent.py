@@ -22,6 +22,7 @@ from ..core.base_agent import BaseAgent, AgentCapability, AgentStatus
 from ..core.agent_state import AgentState, AgentType, Deal, DealStatus, StateManager, Negotiation
 from ..core.agent_tools import tool_registry, LangChainToolAdapter
 from ..core.llm_config import llm_manager
+from .negotiation_coaching_integration import NegotiationCoachingIntegration
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -287,6 +288,9 @@ class NegotiatorAgent(BaseAgent):
         # Initialize agent executor
         self.agent_executor: Optional[AgentExecutor] = None
         
+        # Initialize coaching integration
+        self.coaching_integration: Optional[NegotiationCoachingIntegration] = None
+        
         # Initialize base agent
         super().__init__(
             agent_type=AgentType.NEGOTIATOR,
@@ -297,6 +301,9 @@ class NegotiatorAgent(BaseAgent):
         
         # Setup agent executor after base initialization
         self._setup_agent_executor()
+        
+        # Initialize coaching integration
+        self._setup_coaching_integration()
     
     def _agent_specific_initialization(self):
         """Negotiator agent specific initialization"""
@@ -312,6 +319,17 @@ class NegotiatorAgent(BaseAgent):
         self._setup_response_monitoring()
         
         logger.info("Negotiator Agent initialization complete")
+    
+    def _setup_coaching_integration(self):
+        """Set up negotiation coaching integration"""
+        try:
+            from app.core.database import get_db
+            db = next(get_db())
+            self.coaching_integration = NegotiationCoachingIntegration(db)
+            logger.info("Negotiation coaching integration initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize coaching integration: {e}")
+            self.coaching_integration = None
     
     def _setup_default_templates(self):
         """Set up default message templates"""
@@ -552,6 +570,10 @@ class NegotiatorAgent(BaseAgent):
                 return await self._initiate_outreach(data, state)
             elif task == "handle_responses":
                 return await self._handle_responses(data, state)
+            elif task == "get_coaching":
+                return await self._get_negotiation_coaching(data, state)
+            elif task == "track_coaching_effectiveness":
+                return await self._track_coaching_effectiveness(data, state)
             else:
                 raise ValueError(f"Unknown task: {task}")
                 
@@ -607,6 +629,12 @@ class NegotiatorAgent(BaseAgent):
             active_negotiations = state.get("active_negotiations", [])
             for negotiation_dict in active_negotiations:
                 if negotiation_dict.get("status") in ["initial_outreach", "in_negotiation"]:
+                    # Integrate coaching if available
+                    if self.coaching_integration:
+                        state = await self.coaching_integration.integrate_with_negotiator_workflow(
+                            state, negotiation_dict
+                        )
+                    
                     # Check for responses and handle them
                     response_result = await self._handle_responses(
                         {"negotiation": negotiation_dict}, state
@@ -663,7 +691,9 @@ class NegotiatorAgent(BaseAgent):
             "develop_negotiation_strategy",
             "manage_negotiation",
             "initiate_outreach",
-            "handle_responses"
+            "handle_responses",
+            "get_coaching",
+            "track_coaching_effectiveness"
         ]
     
     # Private Implementation Methods
@@ -1153,4 +1183,132 @@ class NegotiatorAgent(BaseAgent):
             # This would integrate with actual communication APIs
             # For now, simulate sending
             self.messages_sent_today += 1
-            logger.info(f"Sent {message['channel']} message for campaign {campaign['id']}")
+            logger.info(f"Sent {message['channel']} message for campaign {campaign['id']}")    
+
+    # Coaching Integration Methods
+    
+    async def _get_negotiation_coaching(self, data: Dict[str, Any], state: AgentState) -> Dict[str, Any]:
+        """Get real-time negotiation coaching"""
+        try:
+            if not self.coaching_integration:
+                return {
+                    "success": False,
+                    "error": "Coaching integration not available"
+                }
+            
+            property_id = data.get("property_id")
+            if not property_id:
+                return {
+                    "success": False,
+                    "error": "Property ID is required"
+                }
+            
+            # Get coaching
+            coaching_result = await self.coaching_integration.provide_real_time_coaching(
+                property_id=uuid.UUID(property_id),
+                situation=data.get("situation", "Active negotiation"),
+                seller_response=data.get("seller_response"),
+                specific_concerns=data.get("specific_concerns", []),
+                negotiation_phase=data.get("negotiation_phase", "initial")
+            )
+            
+            if coaching_result.get("success"):
+                logger.info(f"Provided coaching for property {property_id}")
+                
+                # Track coaching usage
+                self._track_coaching_usage(coaching_result)
+            
+            return coaching_result
+            
+        except Exception as e:
+            logger.error(f"Error getting negotiation coaching: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def _track_coaching_effectiveness(self, data: Dict[str, Any], state: AgentState) -> Dict[str, Any]:
+        """Track the effectiveness of coaching sessions"""
+        try:
+            if not self.coaching_integration:
+                return {
+                    "success": False,
+                    "error": "Coaching integration not available"
+                }
+            
+            session_id = data.get("session_id")
+            outcome = data.get("outcome")
+            user_feedback = data.get("user_feedback")
+            
+            if not session_id or not outcome:
+                return {
+                    "success": False,
+                    "error": "Session ID and outcome are required"
+                }
+            
+            # Track effectiveness
+            result = await self.coaching_integration.track_coaching_effectiveness(
+                session_id=session_id,
+                outcome=outcome,
+                user_feedback=user_feedback
+            )
+            
+            if result.get("success"):
+                logger.info(f"Tracked coaching effectiveness for session {session_id}: {result.get('effectiveness_score')}")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error tracking coaching effectiveness: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    def _track_coaching_usage(self, coaching_result: Dict[str, Any]):
+        """Track coaching usage for performance metrics"""
+        try:
+            if coaching_result.get("success"):
+                # Update performance metrics
+                session_id = coaching_result.get("session_id")
+                if session_id:
+                    # Track that coaching was provided
+                    logger.info(f"Coaching session {session_id} provided successfully")
+                    
+                    # Could add more detailed tracking here
+                    # e.g., track which types of coaching are most requested
+                    
+        except Exception as e:
+            logger.error(f"Error tracking coaching usage: {e}")
+    
+    def get_coaching_analytics(self, property_id: Optional[str] = None) -> Dict[str, Any]:
+        """Get coaching analytics"""
+        try:
+            if not self.coaching_integration:
+                return {
+                    "error": "Coaching integration not available"
+                }
+            
+            return self.coaching_integration.get_coaching_analytics(property_id)
+            
+        except Exception as e:
+            logger.error(f"Error getting coaching analytics: {e}")
+            return {
+                "error": str(e)
+            }
+    
+    async def generate_coaching_report(self, property_id: str) -> Dict[str, Any]:
+        """Generate a comprehensive coaching report"""
+        try:
+            if not self.coaching_integration:
+                return {
+                    "error": "Coaching integration not available"
+                }
+            
+            return await self.coaching_integration.generate_coaching_report(property_id)
+            
+        except Exception as e:
+            logger.error(f"Error generating coaching report: {e}")
+            return {
+                "error": str(e)
+            }

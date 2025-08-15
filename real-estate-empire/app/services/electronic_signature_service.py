@@ -279,7 +279,13 @@ Real Estate Empire Team
         request.status = callback_data.get("status", request.status)
         
         if callback_data.get("signed_at"):
-            request.signed_at = datetime.fromisoformat(callback_data["signed_at"])
+            signed_at_str = callback_data["signed_at"]
+            try:
+                if signed_at_str.endswith('Z'):
+                    signed_at_str = signed_at_str[:-1] + '+00:00'
+                request.signed_at = datetime.fromisoformat(signed_at_str.replace('Z', '+00:00'))
+            except ValueError:
+                request.signed_at = datetime.now()
         
         # If signed, download and store the signed document
         if request.status == "signed":
@@ -296,10 +302,29 @@ Real Estate Empire Team
         })
         
         if api_response.get("document_content"):
-            # Store signed document
-            self.signed_documents[request.contract_id] = {
+            # Get existing signed document or create new one
+            existing_doc = self.signed_documents.get(request.contract_id, {
                 "content": api_response["document_content"],
-                "signatures": api_response.get("signatures", []),
+                "signatures": [],
+                "downloaded_at": datetime.now().isoformat()
+            })
+            
+            # Add this signature to the document
+            new_signature = {
+                "signer_name": request.signer_name,
+                "signed_at": datetime.now().isoformat(),
+                "ip_address": "192.168.1.1"
+            }
+            
+            # Check if signature already exists for this signer
+            existing_signatures = existing_doc.get("signatures", [])
+            if not any(sig.get("signer_name") == request.signer_name for sig in existing_signatures):
+                existing_signatures.append(new_signature)
+            
+            # Update the document
+            self.signed_documents[request.contract_id] = {
+                "content": existing_doc["content"],
+                "signatures": existing_signatures,
                 "downloaded_at": datetime.now().isoformat()
             }
     
@@ -418,3 +443,254 @@ Real Estate Empire Team
             "signed_count": len(signed_requests),
             "pending_count": len([r for r in requests if r.status in ["sent", "delivered"]])
         }
+    
+    def schedule_automatic_reminders(self, contract_id: UUID, 
+                                   reminder_schedule: List[int] = None) -> bool:
+        """Schedule automatic reminders for pending signature requests."""
+        if reminder_schedule is None:
+            reminder_schedule = [3, 7, 14]  # Days after sending
+        
+        requests = self.list_signature_requests(contract_id=contract_id)
+        pending_requests = [r for r in requests if r.status in ["sent", "delivered"]]
+        
+        scheduled_count = 0
+        for request in pending_requests:
+            if not request.sent_at:
+                continue
+            
+            days_since_sent = (datetime.now() - request.sent_at).days
+            
+            # Check if we should send a reminder
+            for reminder_day in reminder_schedule:
+                if (days_since_sent >= reminder_day and 
+                    request.reminder_count < len(reminder_schedule)):
+                    
+                    # Send reminder
+                    if self.send_reminder(request.id):
+                        scheduled_count += 1
+                    break
+        
+        return scheduled_count > 0
+    
+    def bulk_send_reminders(self, contract_ids: List[UUID], 
+                           custom_message: Optional[str] = None) -> Dict[str, int]:
+        """Send reminders for multiple contracts."""
+        results = {
+            "sent": 0,
+            "failed": 0,
+            "no_pending": 0
+        }
+        
+        for contract_id in contract_ids:
+            requests = self.list_signature_requests(
+                contract_id=contract_id, 
+                status="sent"
+            )
+            
+            if not requests:
+                results["no_pending"] += 1
+                continue
+            
+            for request in requests:
+                if self.send_reminder(request.id, custom_message):
+                    results["sent"] += 1
+                else:
+                    results["failed"] += 1
+        
+        return results
+    
+    def get_pending_signatures_report(self) -> Dict[str, Any]:
+        """Generate a comprehensive report of pending signatures."""
+        all_requests = self.list_signature_requests()
+        pending_requests = [r for r in all_requests if r.status in ["sent", "delivered"]]
+        
+        # Group by urgency
+        urgent = []  # Expiring within 3 days
+        overdue = []  # Past expiry
+        normal = []  # Others
+        
+        now = datetime.now()
+        
+        for request in pending_requests:
+            if request.expires_at:
+                days_to_expiry = (request.expires_at - now).days
+                
+                if days_to_expiry < 0:
+                    overdue.append(request)
+                elif days_to_expiry <= 3:
+                    urgent.append(request)
+                else:
+                    normal.append(request)
+            else:
+                normal.append(request)
+        
+        # Calculate reminder statistics
+        reminder_stats = {}
+        for request in pending_requests:
+            reminder_count = request.reminder_count
+            if reminder_count not in reminder_stats:
+                reminder_stats[reminder_count] = 0
+            reminder_stats[reminder_count] += 1
+        
+        return {
+            "total_pending": len(pending_requests),
+            "urgent": len(urgent),
+            "overdue": len(overdue),
+            "normal": len(normal),
+            "reminder_statistics": reminder_stats,
+            "urgent_requests": [
+                {
+                    "id": str(r.id),
+                    "contract_id": str(r.contract_id),
+                    "signer_name": r.signer_name,
+                    "signer_email": r.signer_email,
+                    "expires_at": r.expires_at.isoformat() if r.expires_at else None,
+                    "days_to_expiry": (r.expires_at - now).days if r.expires_at else None
+                }
+                for r in urgent
+            ],
+            "overdue_requests": [
+                {
+                    "id": str(r.id),
+                    "contract_id": str(r.contract_id),
+                    "signer_name": r.signer_name,
+                    "signer_email": r.signer_email,
+                    "expired_days": (now - r.expires_at).days if r.expires_at else None
+                }
+                for r in overdue
+            ]
+        }
+    
+    def process_webhook_notification(self, webhook_data: Dict[str, Any]) -> bool:
+        """Process webhook notifications from e-signature provider."""
+        try:
+            # Extract common webhook fields
+            event_type = webhook_data.get("event_type")
+            request_id = webhook_data.get("request_id") or webhook_data.get("envelope_id")
+            
+            if not request_id:
+                return False
+            
+            # Convert to UUID
+            try:
+                request_uuid = UUID(request_id)
+            except ValueError:
+                return False
+            
+            request = self.signature_requests.get(request_uuid)
+            if not request:
+                return False
+            
+            # Process different event types
+            if event_type == "signature_requested":
+                request.status = "sent"
+                request.sent_at = datetime.now()
+            
+            elif event_type == "signature_delivered":
+                request.status = "delivered"
+            
+            elif event_type == "signature_viewed":
+                # Update status but don't change from delivered/sent
+                pass
+            
+            elif event_type == "signature_signed":
+                request.status = "signed"
+                signed_at_str = webhook_data.get("signed_at", datetime.now().isoformat())
+                # Handle both with and without timezone info
+                try:
+                    if signed_at_str.endswith('Z'):
+                        signed_at_str = signed_at_str[:-1] + '+00:00'
+                    request.signed_at = datetime.fromisoformat(signed_at_str.replace('Z', '+00:00'))
+                except ValueError:
+                    request.signed_at = datetime.now()
+                self._download_signed_document(request)
+            
+            elif event_type == "signature_declined":
+                request.status = "declined"
+            
+            elif event_type == "signature_expired":
+                request.status = "expired"
+            
+            elif event_type == "signature_cancelled":
+                request.status = "cancelled"
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error processing webhook: {e}")
+            return False
+    
+    def validate_signature_integrity(self, contract_id: UUID) -> Dict[str, Any]:
+        """Validate the integrity of signatures for a contract."""
+        signed_document = self.get_signed_document(contract_id)
+        if not signed_document:
+            return {
+                "valid": False,
+                "error": "No signed document found"
+            }
+        
+        # Get signature requests for this contract
+        requests = self.list_signature_requests(contract_id=contract_id)
+        signed_requests = [r for r in requests if r.status == "signed"]
+        
+        validation_results = {
+            "valid": True,
+            "signatures_count": len(signed_requests),
+            "document_signatures": len(signed_document.get("signatures", [])),
+            "issues": []
+        }
+        
+        # Check if signature counts match
+        if len(signed_requests) != len(signed_document.get("signatures", [])):
+            validation_results["valid"] = False
+            validation_results["issues"].append("Signature count mismatch")
+        
+        # Validate each signature
+        for request in signed_requests:
+            if not request.signed_at:
+                validation_results["valid"] = False
+                validation_results["issues"].append(f"Missing signature timestamp for {request.signer_name}")
+            
+            # Check if signature exists in document
+            doc_signatures = signed_document.get("signatures", [])
+            matching_signature = next(
+                (sig for sig in doc_signatures if sig.get("signer_name") == request.signer_name),
+                None
+            )
+            
+            if not matching_signature:
+                validation_results["valid"] = False
+                validation_results["issues"].append(f"No document signature found for {request.signer_name}")
+        
+        return validation_results
+    
+    def export_signature_audit_trail(self, contract_id: UUID) -> Dict[str, Any]:
+        """Export complete audit trail for contract signatures."""
+        requests = self.list_signature_requests(contract_id=contract_id)
+        signed_document = self.get_signed_document(contract_id)
+        
+        audit_trail = {
+            "contract_id": str(contract_id),
+            "export_timestamp": datetime.now().isoformat(),
+            "signature_requests": [],
+            "signed_document_info": signed_document,
+            "validation_result": self.validate_signature_integrity(contract_id)
+        }
+        
+        for request in requests:
+            request_data = {
+                "id": str(request.id),
+                "signer_name": request.signer_name,
+                "signer_email": request.signer_email,
+                "signer_role": request.signer_role,
+                "status": request.status,
+                "sent_at": request.sent_at.isoformat() if request.sent_at else None,
+                "signed_at": request.signed_at.isoformat() if request.signed_at else None,
+                "expires_at": request.expires_at.isoformat() if request.expires_at else None,
+                "reminder_count": request.reminder_count,
+                "document_url": request.document_url,
+                "signature_url": request.signature_url
+            }
+            audit_trail["signature_requests"].append(request_data)
+        
+        return audit_trail

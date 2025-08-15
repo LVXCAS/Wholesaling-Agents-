@@ -394,3 +394,232 @@ class TestElectronicSignatureService:
         assert "content" in signed_doc
         assert "signatures" in signed_doc
         assert "downloaded_at" in signed_doc
+    
+    def test_schedule_automatic_reminders(self):
+        """Test scheduling automatic reminders."""
+        requests = self.signature_service.create_signature_request(self.test_contract)
+        
+        # Modify sent date to simulate time passing
+        requests[0].sent_at = datetime.now() - timedelta(days=4)
+        requests[1].sent_at = datetime.now() - timedelta(days=8)
+        
+        # Schedule reminders (default: 3, 7, 14 days)
+        result = self.signature_service.schedule_automatic_reminders(self.test_contract.id)
+        
+        # Should have sent reminders
+        assert result is True
+        
+        # Check reminder counts increased
+        updated_requests = self.signature_service.list_signature_requests(self.test_contract.id)
+        assert any(r.reminder_count > 0 for r in updated_requests)
+    
+    def test_bulk_send_reminders(self):
+        """Test bulk reminder sending."""
+        # Create multiple contracts with pending signatures
+        contract2 = ContractDocument(
+            template_id=uuid4(),
+            contract_type=ContractType.LEASE_AGREEMENT,
+            parties=[
+                ContractParty(name="Alice Tenant", role="tenant", email="alice@example.com", signature_required=True)
+            ],
+            generated_content="Lease contract"
+        )
+        
+        requests1 = self.signature_service.create_signature_request(self.test_contract)
+        requests2 = self.signature_service.create_signature_request(contract2)
+        
+        # Send bulk reminders
+        contract_ids = [self.test_contract.id, contract2.id]
+        results = self.signature_service.bulk_send_reminders(
+            contract_ids, 
+            "Please sign the contract at your earliest convenience."
+        )
+        
+        assert "sent" in results
+        assert "failed" in results
+        assert "no_pending" in results
+        assert results["sent"] >= 2  # At least 2 reminders sent
+    
+    def test_pending_signatures_report(self):
+        """Test generating pending signatures report."""
+        # Create signature requests
+        requests = self.signature_service.create_signature_request(self.test_contract)
+        
+        # Modify expiry dates to test urgency classification
+        requests[0].expires_at = datetime.now() + timedelta(days=2)  # Urgent
+        requests[1].expires_at = datetime.now() - timedelta(days=1)  # Overdue
+        
+        # Generate report
+        report = self.signature_service.get_pending_signatures_report()
+        
+        assert "total_pending" in report
+        assert "urgent" in report
+        assert "overdue" in report
+        assert "normal" in report
+        assert "reminder_statistics" in report
+        assert "urgent_requests" in report
+        assert "overdue_requests" in report
+        
+        # Should have at least one urgent and one overdue
+        assert report["urgent"] >= 1
+        assert report["overdue"] >= 1
+        
+        # Check urgent requests details
+        assert len(report["urgent_requests"]) >= 1
+        urgent_request = report["urgent_requests"][0]
+        assert "signer_name" in urgent_request
+        assert "expires_at" in urgent_request
+        assert "days_to_expiry" in urgent_request
+    
+    def test_process_webhook_notification(self):
+        """Test processing webhook notifications."""
+        requests = self.signature_service.create_signature_request(self.test_contract)
+        request = requests[0]
+        
+        # Test signature delivered webhook
+        delivered_webhook = {
+            "event_type": "signature_delivered",
+            "request_id": str(request.id),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        result = self.signature_service.process_webhook_notification(delivered_webhook)
+        assert result is True
+        
+        updated_request = self.signature_service.get_signature_request(request.id)
+        assert updated_request.status == "delivered"
+        
+        # Test signature signed webhook
+        signed_webhook = {
+            "event_type": "signature_signed",
+            "request_id": str(request.id),
+            "signed_at": datetime.now().isoformat()
+        }
+        
+        result2 = self.signature_service.process_webhook_notification(signed_webhook)
+        assert result2 is True
+        
+        updated_request2 = self.signature_service.get_signature_request(request.id)
+        assert updated_request2.status == "signed"
+        assert updated_request2.signed_at is not None
+        
+        # Test invalid webhook
+        invalid_webhook = {
+            "event_type": "unknown_event",
+            "invalid_field": "test"
+        }
+        
+        result3 = self.signature_service.process_webhook_notification(invalid_webhook)
+        assert result3 is False
+    
+    def test_validate_signature_integrity(self):
+        """Test signature integrity validation."""
+        requests = self.signature_service.create_signature_request(self.test_contract)
+        
+        # Initially no signed document
+        validation = self.signature_service.validate_signature_integrity(self.test_contract.id)
+        assert validation["valid"] is False
+        assert "No signed document found" in validation["error"]
+        
+        # Complete signatures
+        for request in requests:
+            callback_data = {
+                "request_id": str(request.id),
+                "status": "signed",
+                "signed_at": datetime.now().isoformat()
+            }
+            self.signature_service.process_signature_callback(callback_data)
+        
+        # Now validation should pass
+        validation2 = self.signature_service.validate_signature_integrity(self.test_contract.id)
+        assert validation2["valid"] is True
+        assert validation2["signatures_count"] == 2
+        assert validation2["document_signatures"] == 2
+        assert len(validation2["issues"]) == 0
+    
+    def test_export_signature_audit_trail(self):
+        """Test exporting signature audit trail."""
+        requests = self.signature_service.create_signature_request(self.test_contract)
+        
+        # Complete one signature
+        callback_data = {
+            "request_id": str(requests[0].id),
+            "status": "signed",
+            "signed_at": datetime.now().isoformat()
+        }
+        self.signature_service.process_signature_callback(callback_data)
+        
+        # Export audit trail
+        audit_trail = self.signature_service.export_signature_audit_trail(self.test_contract.id)
+        
+        assert "contract_id" in audit_trail
+        assert "export_timestamp" in audit_trail
+        assert "signature_requests" in audit_trail
+        assert "signed_document_info" in audit_trail
+        assert "validation_result" in audit_trail
+        
+        # Check signature requests details
+        assert len(audit_trail["signature_requests"]) == 2
+        
+        signed_request = next(
+            (req for req in audit_trail["signature_requests"] if req["status"] == "signed"),
+            None
+        )
+        assert signed_request is not None
+        assert signed_request["signed_at"] is not None
+        assert signed_request["signer_name"] == "John Buyer"
+    
+    def test_signature_workflow_integration(self):
+        """Test complete signature workflow integration."""
+        # Step 1: Create signature requests
+        requests = self.signature_service.create_signature_request(
+            self.test_contract,
+            custom_message="Please review and sign this important contract."
+        )
+        
+        assert len(requests) == 2
+        assert self.test_contract.status == ContractStatus.PENDING_SIGNATURE
+        
+        # Step 2: Send reminders
+        for request in requests:
+            reminder_result = self.signature_service.send_reminder(
+                request.id,
+                "Friendly reminder to sign the contract."
+            )
+            assert reminder_result is True
+            assert request.reminder_count > 0
+        
+        # Step 3: Process signatures via webhooks
+        for i, request in enumerate(requests):
+            webhook_data = {
+                "event_type": "signature_signed",
+                "request_id": str(request.id),
+                "signed_at": (datetime.now() + timedelta(hours=i)).isoformat()
+            }
+            
+            webhook_result = self.signature_service.process_webhook_notification(webhook_data)
+            assert webhook_result is True
+        
+        # Step 4: Verify contract completion
+        completion_check = self.signature_service.check_contract_completion(self.test_contract)
+        assert completion_check is True
+        
+        # Step 5: Finalize contract
+        finalize_result = self.signature_service.finalize_contract(self.test_contract)
+        assert finalize_result is True
+        assert self.test_contract.status == ContractStatus.EXECUTED
+        assert len(self.test_contract.signatures) == 2
+        
+        # Step 6: Validate integrity
+        integrity_validation = self.signature_service.validate_signature_integrity(self.test_contract.id)
+        assert integrity_validation["valid"] is True
+        
+        # Step 7: Export audit trail
+        audit_trail = self.signature_service.export_signature_audit_trail(self.test_contract.id)
+        assert len(audit_trail["signature_requests"]) == 2
+        assert all(req["status"] == "signed" for req in audit_trail["signature_requests"])
+        
+        # Step 8: Get analytics
+        analytics = self.signature_service.get_signature_analytics(self.test_contract.id)
+        assert analytics["completion_rate"] == 100.0
+        assert analytics["signed_count"] == 2

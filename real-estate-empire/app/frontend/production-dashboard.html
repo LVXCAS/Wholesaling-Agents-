@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Dashboard - Real Estate Empire</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <style>
+        .production-dashboard {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-healthy { background-color: #4CAF50; }
+        .status-warning { background-color: #FF9800; }
+        .status-critical { background-color: #F44336; }
+        .status-offline { background-color: #9E9E9E; }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .metric-change.positive { color: #4CAF50; }
+        .metric-change.negative { color: #F44336; }
+        
+        .alerts-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-left: 4px solid #F44336;
+            background: #FFF3F3;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .alert-item.warning {
+            border-left-color: #FF9800;
+            background: #FFF8E1;
+        }
+        
+        .alert-item.info {
+            border-left-color: #2196F3;
+            background: #E3F2FD;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .alert-message {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #999;
+            margin-left: 15px;
+        }
+        
+        .launch-status {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .launch-progress {
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #E0E0E0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+        
+        .phase-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .phase-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #F5F5F5;
+            border-radius: 5px;
+        }
+        
+        .phase-item.completed {
+            background: #E8F5E8;
+            color: #4CAF50;
+        }
+        
+        .phase-item.active {
+            background: #E3F2FD;
+            color: #2196F3;
+        }
+        
+        .phase-item.failed {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+        
+        .refresh-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .refresh-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E0E0E0;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="production-dashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1>Production Dashboard</h1>
+                <p>Real Estate Empire - System Status & Monitoring</p>
+            </div>
+            <div class="auto-refresh">
+                <button class="refresh-button" onclick="refreshDashboard()">Refresh</button>
+                <label>
+                    <input type="checkbox" id="autoRefresh" checked> Auto-refresh (30s)
+                </label>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="launch-status">
+            <h2>System Status</h2>
+            <div id="systemStatus">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading system status...
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid" id="metricsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading metrics...
+            </div>
+        </div>
+
+        <!-- Active Launch Status -->
+        <div class="launch-status" id="launchStatus" style="display: none;">
+            <h2>Active Launch</h2>
+            <div id="launchContent"></div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alerts-section">
+            <h2>Active Alerts</h2>
+            <div id="alertsList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading alerts...
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="chart-container">
+            <h2 class="chart-title">System Performance</h2>
+            <div id="performanceChart">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading performance data...
+                </div>
+            </div>
+        </div>
+
+        <!-- Launch History -->
+        <div class="chart-container">
+            <h2 class="chart-title">Recent Launches</h2>
+            <div id="launchHistory">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading launch history...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshDashboard();
+            setupAutoRefresh();
+        });
+        
+        function setupAutoRefresh() {
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            
+            if (autoRefreshCheckbox.checked) {
+                autoRefreshInterval = setInterval(refreshDashboard, 30000);
+            }
+            
+            autoRefreshCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    autoRefreshInterval = setInterval(refreshDashboard, 30000);
+                } else {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+        }
+        
+        async function refreshDashboard() {
+            try {
+                await Promise.all([
+                    loadSystemStatus(),
+                    loadMetrics(),
+                    loadLaunchStatus(),
+                    loadAlerts(),
+                    loadLaunchHistory()
+                ]);
+            } catch (error) {
+                console.error('Error refreshing dashboard:', error);
+            }
+        }
+        
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/production/metrics');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('systemStatus');
+                const statusClass = getStatusClass(data.overall_status);
+                
+                statusElement.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <span class="status-indicator ${statusClass}"></span>
+                                <span style="font-size: 24px; font-weight: 600;">${data.overall_status.toUpperCase()}</span>
+                            </div>
+                            <p style="color: #666; margin: 0;">Last updated: ${new Date(data.timestamp).toLocaleString()}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 14px; color: #666;">Monitoring Status</div>
+                            <div style="font-size: 18px; font-weight: 600;">${data.monitoring_status}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('systemStatus').innerHTML = `
+                    <div style="color: #F44336;">Error loading system status: ${error.message}</div>
+                `;
+            }
+        }
+        
+        async function loadMetrics() {
+            try {
+                const response = await fetch('/api/production/metrics');
+                const data = await response.json();
+                
+                const metricsGrid = document.getElementById('metricsGrid');
+                const systemMetrics = data.system_metrics || {};
+                const alerts = data.alerts || {};
+                
+                metricsGrid.innerHTML = `
+                    <div class="metric-card">
+                        <div class="metric-title">CPU Usage</div>
+                        <div class="metric-value">${(systemMetrics.cpu?.percent || 0).toFixed(1)}%</div>
+                        <div class="metric-change">Cores: ${systemMetrics.cpu?.count || 0}</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Memory Usage</div>
+                        <div class="metric-value">${(systemMetrics.memory?.percent || 0).toFixed(1)}%</div>
+                        <div class="metric-change">${formatBytes(systemMetrics.memory?.used || 0)} / ${formatBytes(systemMetrics.memory?.total || 0)}</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Disk Usage</div>
+                        <div class="metric-value">${(systemMetrics.disk?.percent || 0).toFixed(1)}%</div>
+                        <div class="metric-change">${formatBytes(systemMetrics.disk?.used || 0)} / ${formatBytes(systemMetrics.disk?.total || 0)}</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Active Alerts</div>
+                        <div class="metric-value">${alerts.total_active || 0}</div>
+                        <div class="metric-change">Critical: ${alerts.critical || 0}, Warning: ${alerts.warning || 0}</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Network I/O</div>
+                        <div class="metric-value">${formatBytes(systemMetrics.network?.bytes_sent || 0)}</div>
+                        <div class="metric-change">Sent / ${formatBytes(systemMetrics.network?.bytes_recv || 0)} Received</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Processes</div>
+                        <div class="metric-value">${systemMetrics.processes?.count || 0}</div>
+                        <div class="metric-change">Threads: ${systemMetrics.processes?.threads || 0}</div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('metricsGrid').innerHTML = `
+                    <div style="color: #F44336;">Error loading metrics: ${error.message}</div>
+                `;
+            }
+        }
+        
+        async function loadLaunchStatus() {
+            try {
+                const response = await fetch('/api/production/status');
+                const data = await response.json();
+                
+                const launchStatusElement = document.getElementById('launchStatus');
+                const launchContent = document.getElementById('launchContent');
+                
+                if (data.active) {
+                    launchStatusElement.style.display = 'block';
+                    
+                    const phases = [
+                        'pre_launch', 'deployment', 'health_check', 'monitoring_setup',
+                        'support_activation', 'feedback_collection', 'user_onboarding', 'optimization'
+                    ];
+                    
+                    const currentPhaseIndex = phases.indexOf(data.current_phase);
+                    const progress = ((currentPhaseIndex + 1) / phases.length) * 100;
+                    
+                    launchContent.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div>
+                                <h3>Launch ID: ${data.launch_id}</h3>
+                                <p>Version: ${data.version} | Status: ${data.status}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 14px; color: #666;">Duration</div>
+                                <div style="font-size: 18px; font-weight: 600;">${formatDuration(data.duration)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="launch-progress">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Current Phase: ${data.current_phase.replace('_', ' ').toUpperCase()}</span>
+                                <span>${progress.toFixed(0)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-list">
+                            ${phases.map((phase, index) => {
+                                let phaseClass = '';
+                                if (index < currentPhaseIndex) phaseClass = 'completed';
+                                else if (index === currentPhaseIndex) phaseClass = 'active';
+                                
+                                return `<div class="phase-item ${phaseClass}">${phase.replace('_', ' ')}</div>`;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    launchStatusElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading launch status:', error);
+            }
+        }
+        
+        async function loadAlerts() {
+            try {
+                // This would fetch actual alerts from the API
+                // For now, we'll show a placeholder
+                const alertsList = document.getElementById('alertsList');
+                
+                alertsList.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 20px;">
+                        <p>No active alerts</p>
+                        <p style="font-size: 14px;">System is operating normally</p>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('alertsList').innerHTML = `
+                    <div style="color: #F44336;">Error loading alerts: ${error.message}</div>
+                `;
+            }
+        }
+        
+        async function loadLaunchHistory() {
+            try {
+                const response = await fetch('/api/production/history?limit=5');
+                const data = await response.json();
+                
+                const historyElement = document.getElementById('launchHistory');
+                
+                if (data.launches && data.launches.length > 0) {
+                    historyElement.innerHTML = `
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #E0E0E0;">
+                                        <th style="text-align: left; padding: 10px;">Version</th>
+                                        <th style="text-align: left; padding: 10px;">Status</th>
+                                        <th style="text-align: left; padding: 10px;">Started</th>
+                                        <th style="text-align: left; padding: 10px;">Duration</th>
+                                        <th style="text-align: left; padding: 10px;">Success Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.launches.map(launch => `
+                                        <tr style="border-bottom: 1px solid #E0E0E0;">
+                                            <td style="padding: 10px;">${launch.version}</td>
+                                            <td style="padding: 10px;">
+                                                <span class="status-indicator ${getStatusClass(launch.status)}"></span>
+                                                ${launch.status}
+                                            </td>
+                                            <td style="padding: 10px;">${new Date(launch.started_at).toLocaleString()}</td>
+                                            <td style="padding: 10px;">${launch.duration ? formatDuration(launch.duration) : 'N/A'}</td>
+                                            <td style="padding: 10px;">
+                                                ${launch.deployment_success ? '✅' : '❌'} Deployment
+                                                ${launch.health_check_success ? '✅' : '❌'} Health
+                                                ${launch.monitoring_active ? '✅' : '❌'} Monitoring
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    historyElement.innerHTML = `
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            <p>No launch history available</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('launchHistory').innerHTML = `
+                    <div style="color: #F44336;">Error loading launch history: ${error.message}</div>
+                `;
+            }
+        }
+        
+        function getStatusClass(status) {
+            switch (status?.toLowerCase()) {
+                case 'healthy':
+                case 'completed':
+                    return 'status-healthy';
+                case 'warning':
+                case 'degraded':
+                    return 'status-warning';
+                case 'critical':
+                case 'failed':
+                    return 'status-critical';
+                default:
+                    return 'status-offline';
+            }
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return '0s';
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m ${secs}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${secs}s`;
+            } else {
+                return `${secs}s`;
+            }
+        }
+    </script>
+</body>
+</html>
